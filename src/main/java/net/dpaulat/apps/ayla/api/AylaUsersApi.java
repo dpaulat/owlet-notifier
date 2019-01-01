@@ -1,9 +1,9 @@
 package net.dpaulat.apps.ayla.api;
 
 import net.dpaulat.apps.ayla.json.AylaApplication;
-import net.dpaulat.apps.ayla.json.AylaRefreshTokenRequest;
-import net.dpaulat.apps.ayla.json.AylaSignInRequest;
-import net.dpaulat.apps.ayla.json.AylaSignInResponse;
+import net.dpaulat.apps.ayla.json.AylaAuthorizationByEmail;
+import net.dpaulat.apps.ayla.json.AylaUserLoginInput;
+import net.dpaulat.apps.ayla.json.AylaUserRefresh;
 import net.dpaulat.apps.rest.api.RestApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,22 +13,22 @@ public class AylaUsersApi extends RestApi {
 
     private static final Logger log = LoggerFactory.getLogger(AylaUsersApi.class);
 
-    private static final String baseUrl = "https://user-field.aylanetworks.com/users/";
-    private static final String signInUri = "sign_in";
-    private static final String refreshTokenUri = "refresh_token";
+    private static final String baseUrl = "https://user-field.aylanetworks.com/users";
+    private static final String signInUri = "/sign_in";
+    private static final String refreshTokenUri = "/refresh_token";
 
     public AylaUsersApi() {
         super(baseUrl);
     }
 
-    public AylaSignInResponse signIn(String email, String password, AylaApplication application) {
-        AylaSignInRequest signInRequest = new AylaSignInRequest(email, password, application);
-        AylaSignInResponse signInResponse;
+    public AylaAuthorizationByEmail signIn(String email, String password, AylaApplication application) {
+        AylaUserLoginInput signInRequest = new AylaUserLoginInput(email, password, application);
+        AylaAuthorizationByEmail signInResponse;
 
         log.info("Signing in user {}", email);
         log.debug(signInRequest.toString());
 
-        signInResponse = post(signInUri, BodyInserters.fromObject(signInRequest), AylaSignInResponse.class);
+        signInResponse = post(signInUri, BodyInserters.fromObject(signInRequest), AylaAuthorizationByEmail.class);
 
         if (signInResponse != null) {
             log.info("Sign in successful");
@@ -40,13 +40,13 @@ public class AylaUsersApi extends RestApi {
         return signInResponse;
     }
 
-    public AylaSignInResponse refreshToken(String refreshToken) {
-        AylaRefreshTokenRequest refreshTokenRequest = new AylaRefreshTokenRequest(refreshToken);
-        AylaSignInResponse signInResponse;
+    public AylaAuthorizationByEmail refreshToken(String refreshToken) {
+        AylaUserRefresh refreshTokenRequest = new AylaUserRefresh(refreshToken);
+        AylaAuthorizationByEmail signInResponse;
 
         log.info("Refreshing access token");
 
-        signInResponse = post(refreshTokenUri, BodyInserters.fromObject(refreshTokenRequest), AylaSignInResponse.class);
+        signInResponse = post(refreshTokenUri, BodyInserters.fromObject(refreshTokenRequest), AylaAuthorizationByEmail.class);
 
         if (signInResponse != null) {
             log.info("Refresh successful");

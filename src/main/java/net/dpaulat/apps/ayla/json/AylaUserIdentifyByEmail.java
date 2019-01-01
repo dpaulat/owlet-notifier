@@ -3,16 +3,16 @@ package net.dpaulat.apps.ayla.json;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AylaUser {
+public class AylaUserIdentifyByEmail {
 
     private String email;
     private String password;
     private AylaApplication application;
 
-    public AylaUser() {
+    public AylaUserIdentifyByEmail() {
     }
 
-    public AylaUser(String email, String password, AylaApplication application) {
+    public AylaUserIdentifyByEmail(String email, String password, AylaApplication application) {
         this.email = email;
         this.password = password;
         this.application = application;
@@ -44,7 +44,7 @@ public class AylaUser {
 
     @Override
     public String toString() {
-        return "AylaUser{" +
+        return "AylaUserIdentifyByEmail{" +
                 "email='" + email + '\'' +
                 ", password='***'" +
                 ", application=" + application +

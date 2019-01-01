@@ -1,33 +1,31 @@
 package net.dpaulat.apps.ayla.json;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AylaUserRefresh {
 
-    @JsonProperty(value = "refresh_token")
-    private String refreshToken;
+    private AylaUserRefreshToken user;
 
     public AylaUserRefresh() {
     }
 
     public AylaUserRefresh(String refreshToken) {
-        this.refreshToken = refreshToken;
+        this.user = new AylaUserRefreshToken(refreshToken);
     }
 
-    public String getRefreshToken() {
-        return refreshToken;
+    public AylaUserRefreshToken getUser() {
+        return user;
     }
 
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
+    public void setUser(AylaUserRefreshToken user) {
+        this.user = user;
     }
 
     @Override
     public String toString() {
         return "AylaUserRefresh{" +
-                "refreshToken='" + refreshToken + '\'' +
+                "user=" + user +
                 '}';
     }
 }

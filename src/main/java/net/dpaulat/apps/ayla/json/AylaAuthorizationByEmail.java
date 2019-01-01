@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Arrays;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AylaSignInResponse {
+public class AylaAuthorizationByEmail {
 
     @JsonProperty(value = "access_token")
     private String accessToken;
@@ -18,7 +18,7 @@ public class AylaSignInResponse {
     @JsonProperty(value = "role_tags")
     private AylaRoleTag[] roleTags;
 
-    public AylaSignInResponse() {
+    public AylaAuthorizationByEmail() {
     }
 
     public String getAccessToken() {
@@ -63,7 +63,7 @@ public class AylaSignInResponse {
 
     @Override
     public String toString() {
-        return "AylaSignInResponse{" +
+        return "AylaAuthorizationByEmail{" +
                 "accessToken='" + accessToken + '\'' +
                 ", refreshToken='" + refreshToken + '\'' +
                 ", expiresIn=" + expiresIn +

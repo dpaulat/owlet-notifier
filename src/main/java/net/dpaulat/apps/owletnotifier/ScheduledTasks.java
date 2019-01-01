@@ -32,6 +32,7 @@ public class ScheduledTasks {
             log.debug(config.getDevices().toString());
             owletApi.signIn(config.getEmail(), config.getPassword());
             owletApi.refreshToken();
+            owletApi.retrieveDevices();
         }
     }
 }
