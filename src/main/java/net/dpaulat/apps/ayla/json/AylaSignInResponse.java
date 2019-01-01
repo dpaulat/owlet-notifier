@@ -1,10 +1,12 @@
-package net.dpaulat.apps.owlet.json;
+package net.dpaulat.apps.ayla.json;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Arrays;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OwletSignInResponse {
+public class AylaSignInResponse {
 
     @JsonProperty(value = "access_token")
     private String accessToken;
@@ -14,9 +16,9 @@ public class OwletSignInResponse {
     private Integer expiresIn;
     private String role;
     @JsonProperty(value = "role_tags")
-    private String[] roleTags;
+    private AylaRoleTag[] roleTags;
 
-    public OwletSignInResponse() {
+    public AylaSignInResponse() {
     }
 
     public String getAccessToken() {
@@ -51,33 +53,22 @@ public class OwletSignInResponse {
         this.role = role;
     }
 
-    public String[] getRoleTags() {
+    public AylaRoleTag[] getRoleTags() {
         return roleTags;
     }
 
-    public void setRoleTags(String[] roleTags) {
+    public void setRoleTags(AylaRoleTag[] roleTags) {
         this.roleTags = roleTags;
     }
 
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder();
-        str.append("OwletSignInResponse{access_token=");
-        str.append(accessToken);
-        str.append(", refresh_token=");
-        str.append(refreshToken);
-        str.append(", expires_in=");
-        str.append(expiresIn);
-        str.append(", role=");
-        str.append(role);
-        str.append(", role_tags=[");
-        for (int i = 0; i < roleTags.length; i++) {
-            str.append(roleTags[i]);
-            if (i < roleTags.length - 1) {
-                str.append(", ");
-            }
-        }
-        str.append("]}");
-        return str.toString();
+        return "AylaSignInResponse{" +
+                "accessToken='" + accessToken + '\'' +
+                ", refreshToken='" + refreshToken + '\'' +
+                ", expiresIn=" + expiresIn +
+                ", role='" + role + '\'' +
+                ", roleTags=" + Arrays.toString(roleTags) +
+                '}';
     }
 }

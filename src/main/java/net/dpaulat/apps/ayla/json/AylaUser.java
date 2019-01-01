@@ -1,22 +1,22 @@
-package net.dpaulat.apps.owlet.json;
+package net.dpaulat.apps.ayla.json;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OwletUser {
+public class AylaUser {
 
     private String email;
     private String password;
-    private OwletApplication application;
+    private AylaApplication application;
 
-    public OwletUser() {
+    public AylaUser() {
     }
 
-    public static OwletUser create(String email, String password) {
-        OwletUser user = new OwletUser();
+    public static AylaUser create(String email, String password, AylaApplication application) {
+        AylaUser user = new AylaUser();
         user.setEmail(email);
         user.setPassword(password);
-        user.setApplication(OwletApplication.create());
+        user.setApplication(application);
         return user;
     }
 
@@ -36,16 +36,20 @@ public class OwletUser {
         this.password = password;
     }
 
-    public OwletApplication getApplication() {
+    public AylaApplication getApplication() {
         return application;
     }
 
-    public void setApplication(OwletApplication application) {
+    public void setApplication(AylaApplication application) {
         this.application = application;
     }
 
     @Override
     public String toString() {
-        return "OwletApplication{email=" + email + ", password=xxxxxxxx, application=" + application + "}";
+        return "AylaUser{" +
+                "email='" + email + '\'' +
+                ", password='***'" +
+                ", application=" + application +
+                '}';
     }
 }
