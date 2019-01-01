@@ -10,10 +10,8 @@ public class AylaSignInRequest {
     public AylaSignInRequest() {
     }
 
-    public static AylaSignInRequest create(String email, String password, AylaApplication application) {
-        AylaSignInRequest signInRequest = new AylaSignInRequest();
-        signInRequest.setUser(AylaUser.create(email, password, application));
-        return signInRequest;
+    public AylaSignInRequest(String email, String password, AylaApplication application) {
+        this.user = new AylaUser(email, password, application);
     }
 
     public AylaUser getUser() {

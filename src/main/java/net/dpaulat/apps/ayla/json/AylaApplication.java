@@ -14,6 +14,11 @@ public class AylaApplication {
     public AylaApplication() {
     }
 
+    public AylaApplication(String appId, String appSecret) {
+        this.appId = appId;
+        this.appSecret = appSecret;
+    }
+
     public String getAppId() {
         return appId;
     }

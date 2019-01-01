@@ -11,18 +11,27 @@ public class OwletApi {
     private static final Logger log = LoggerFactory.getLogger(OwletApi.class);
 
     private AylaUsersApi aylaUsersApi;
-    private AylaSignInResponse signInResponse;
+    private AylaSignInResponse aylaSignInResponse;
+
+    private OwletApplication owletApplication;
 
     public OwletApi() {
         this.aylaUsersApi = new AylaUsersApi();
-        this.signInResponse = null;
+        this.aylaSignInResponse = null;
+        this.owletApplication = new OwletApplication();
     }
 
     public void signIn(String email, String password) {
-        signInResponse = aylaUsersApi.signIn(email, password, OwletApplication.create());
+        aylaSignInResponse = aylaUsersApi.signIn(email, password, new OwletApplication());
+    }
+
+    public void refreshToken() {
+        if (aylaSignInResponse != null) {
+            aylaSignInResponse = aylaUsersApi.refreshToken(aylaSignInResponse.getRefreshToken());
+        }
     }
 
     public boolean isSignedIn() {
-        return signInResponse != null;
+        return aylaSignInResponse != null;
     }
 }

@@ -12,12 +12,10 @@ public class AylaUser {
     public AylaUser() {
     }
 
-    public static AylaUser create(String email, String password, AylaApplication application) {
-        AylaUser user = new AylaUser();
-        user.setEmail(email);
-        user.setPassword(password);
-        user.setApplication(application);
-        return user;
+    public AylaUser(String email, String password, AylaApplication application) {
+        this.email = email;
+        this.password = password;
+        this.application = application;
     }
 
     public String getEmail() {
