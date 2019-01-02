@@ -9,6 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.reactive.function.BodyInserters;
 
+/**
+ * API to interact with the Ayla User Service
+ *
+ * @link https://developer.aylanetworks.com/apibrowser/swaggers/UserService
+ */
 public class AylaUsersApi extends RestApi {
 
     private static final Logger log = LoggerFactory.getLogger(AylaUsersApi.class);
@@ -40,8 +45,8 @@ public class AylaUsersApi extends RestApi {
         return signInResponse;
     }
 
-    public AylaAuthorizationByEmail refreshToken(String refreshToken) {
-        AylaUserRefresh refreshTokenRequest = new AylaUserRefresh(refreshToken);
+    public AylaAuthorizationByEmail refreshToken(AylaAuthorizationByEmail auth) {
+        AylaUserRefresh refreshTokenRequest = new AylaUserRefresh(auth.getRefreshToken());
         AylaAuthorizationByEmail signInResponse;
 
         log.info("Refreshing access token");

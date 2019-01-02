@@ -1,11 +1,14 @@
 package net.dpaulat.apps.owletnotifier;
 
+import net.dpaulat.apps.ayla.json.AylaDevice;
 import net.dpaulat.apps.owlet.OwletApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class ScheduledTasks {
@@ -32,7 +35,14 @@ public class ScheduledTasks {
             log.debug(config.getDevices().toString());
             owletApi.signIn(config.getEmail(), config.getPassword());
             owletApi.refreshToken();
-            owletApi.retrieveDevices();
+            List<AylaDevice> deviceList = owletApi.retrieveDevices();
+            for (AylaDevice device : deviceList) {
+                owletApi.updateProperties(device, (name, oldValue, newValue) -> {
+                    if (name.equals("OXYGEN_LEVEL")) {
+                        log.debug("Oxygen level changed from {} to {}", oldValue, newValue);
+                    }
+                });
+            }
         }
     }
 }
