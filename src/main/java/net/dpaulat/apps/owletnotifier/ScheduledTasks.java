@@ -26,14 +26,17 @@ public class ScheduledTasks {
         this.initialized = false;
     }
 
-    @Scheduled(fixedRate = 5000)
-    public void reportCurrentTime() {
+    @Scheduled(fixedRate = 30000)
+    public void process() {
         log.info("Ping");
-
         if (!initialized) {
             initialized = true;
-            log.debug(config.getDevices().toString());
-            owletApi.signIn(config.getEmail(), config.getPassword());
+            log.debug(config.toString());
+            log.debug(config.getOwlet().toString());
+            for (ConfigProperties.Owlet.Monitor monitor : config.getOwlet().getMonitors()) {
+                log.debug(monitor.toString());
+            }
+            owletApi.signIn(config.getOwlet().getEmail(), config.getOwlet().getPassword());
             owletApi.refreshToken();
             List<AylaDevice> deviceList = owletApi.retrieveDevices();
             for (AylaDevice device : deviceList) {
