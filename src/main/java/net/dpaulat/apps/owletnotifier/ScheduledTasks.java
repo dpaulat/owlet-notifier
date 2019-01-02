@@ -38,8 +38,9 @@ public class ScheduledTasks {
             List<AylaDevice> deviceList = owletApi.retrieveDevices();
             for (AylaDevice device : deviceList) {
                 owletApi.updateProperties(device, (name, oldValue, newValue) -> {
-                    if (name.equals("OXYGEN_LEVEL")) {
-                        log.debug("Oxygen level changed from {} to {}", oldValue, newValue);
+                    if (name.equals(OwletApi.Properties.OXYGEN_LEVEL.name())) {
+                        log.debug("{}'s oxygen level changed from {} to {}",
+                                owletApi.getPropertyValue(device, OwletApi.Properties.BABY_NAME), oldValue, newValue);
                     }
                 });
             }
