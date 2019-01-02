@@ -5,10 +5,14 @@ import net.dpaulat.apps.owlet.OwletApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class ScheduledTasks {
@@ -16,36 +20,151 @@ public class ScheduledTasks {
     private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
 
     @Autowired
+    private ApplicationContext context;
+    @Autowired
     private ConfigProperties config;
-
     private OwletApi owletApi;
     private boolean initialized;
+    private List<AylaDevice> deviceList;
+    private Map<ConfigProperties.Owlet.Monitor, MonitorStatus> monitorStatusMap;
 
     public ScheduledTasks() {
         this.owletApi = new OwletApi();
         this.initialized = false;
+        this.deviceList = null;
+        this.monitorStatusMap = new HashMap<>();
     }
 
-    @Scheduled(fixedRate = 30000)
+    private static Integer tryParseInt(String value) {
+        Integer i = null;
+
+        try {
+            i = Integer.valueOf(value);
+        } catch (NumberFormatException ex) {
+        }
+
+        return i;
+    }
+
+    @Scheduled(fixedRate = 10000)
     public void process() {
-        log.info("Ping");
         if (!initialized) {
             initialized = true;
+            log.info("Initializing Owlet Monitor");
             log.debug(config.toString());
-            log.debug(config.getOwlet().toString());
-            for (ConfigProperties.Owlet.Monitor monitor : config.getOwlet().getMonitors()) {
-                log.debug(monitor.toString());
-            }
+
             owletApi.signIn(config.getOwlet().getEmail(), config.getOwlet().getPassword());
-            owletApi.refreshToken();
-            List<AylaDevice> deviceList = owletApi.retrieveDevices();
-            for (AylaDevice device : deviceList) {
-                owletApi.updateProperties(device, (name, oldValue, newValue) -> {
-                    if (name.equals(OwletApi.Properties.OXYGEN_LEVEL.name())) {
-                        log.debug("{}'s oxygen level changed from {} to {}",
-                                owletApi.getPropertyValue(device, OwletApi.Properties.BABY_NAME), oldValue, newValue);
+            if (!owletApi.isSignedIn()) {
+                log.error("Could not sign in, exiting");
+                SpringApplication.exit(context, () -> -1);
+            }
+
+            deviceList = owletApi.retrieveDevices();
+        }
+
+        // TODO: Determine when to refresh access token
+
+        for (AylaDevice device : deviceList) {
+            // TODO: Update APP_ACTIVE to 1
+            owletApi.updateProperties(device, (name, oldValue, newValue) -> {
+                for (ConfigProperties.Owlet.Monitor monitor : config.getOwlet().getMonitors()) {
+                    if (name.equals(monitor.getName())) {
+                        evaluateMonitor(monitor, device, name, oldValue, newValue);
                     }
-                });
+                }
+            });
+        }
+    }
+
+    private void evaluateMonitor(ConfigProperties.Owlet.Monitor monitor, AylaDevice device, String name,
+                                 String oldValue, String newValue) {
+        MonitorStatus status;
+        if (monitorStatusMap.containsKey(monitor)) {
+            status = monitorStatusMap.get(monitor);
+        } else {
+            status = new MonitorStatus();
+            monitorStatusMap.put(monitor, status);
+        }
+
+        String message = String.format("%s's %s is %s",
+                owletApi.getPropertyValue(device, OwletApi.Properties.BABY_NAME),
+                OwletApi.Properties.toEnum(name).getDisplayName().toLowerCase(), newValue);
+        log.debug("Evaluating {} [{}]: {} -> {}", name, device.getDsn(), oldValue, newValue);
+
+        Integer newIntValue = tryParseInt(newValue);
+
+        if (newIntValue != null) {
+            if (monitor.getMinimumValue() != null) {
+                if (newIntValue < monitor.getMinimumValue()) {
+                    log.warn(message);
+
+                    if (status.getMinimumCondition().hasTimeElapsed(monitor.getRepeatTime())) {
+                        status.getMinimumCondition().activate();
+                    }
+                } else if (status.getMinimumCondition().isActive()) {
+                    log.info(message);
+                    status.getMinimumCondition().deactivate();
+                }
+            }
+            if (monitor.getMaximumValue() != null) {
+                if (newIntValue > monitor.getMaximumValue()) {
+                    log.warn(message);
+
+                    if (status.getMaximumCondition().hasTimeElapsed(monitor.getRepeatTime())) {
+                        status.getMaximumCondition().activate();
+                    }
+                } else if (status.getMaximumCondition().isActive()) {
+                    log.info(message);
+                    status.getMaximumCondition().deactivate();
+                }
+            }
+        }
+    }
+
+    private static class MonitorStatus {
+        final Condition minimumCondition;
+        final Condition maximumCondition;
+
+        MonitorStatus() {
+            minimumCondition = new Condition();
+            maximumCondition = new Condition();
+        }
+
+        public Condition getMinimumCondition() {
+            return minimumCondition;
+        }
+
+        public Condition getMaximumCondition() {
+            return maximumCondition;
+        }
+
+        static class Condition {
+            boolean active;
+            long activeTime;
+
+            Condition() {
+                active = false;
+                activeTime = 0;
+            }
+
+            void activate() {
+                this.active = true;
+                this.activeTime = System.currentTimeMillis();
+                log.info("Activating condition");
+            }
+
+            void deactivate() {
+                this.active = false;
+                log.info("Deactivating condition");
+            }
+
+            boolean isActive() {
+                return active;
+            }
+
+            private boolean hasTimeElapsed(Long seconds) {
+                return !active ||
+                        (seconds != null && (Math.abs(System.currentTimeMillis() - activeTime) / 1000 > seconds));
             }
         }
     }

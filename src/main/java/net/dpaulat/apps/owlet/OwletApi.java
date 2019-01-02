@@ -144,12 +144,22 @@ public class OwletApi {
         SOCK_DIS_APP_PREF("Sock Dis. App Pref."),
         SOCK_DIS_NEST_PREF("Sock Dis. Nest Pref."),
         SOCK_OFF("Sock Off"),
-        SOCK_REC_PLACED("Sock Recently Placed");
+        SOCK_REC_PLACED("Sock Recently Placed"),
+        UNKNOWN("Unknown property");
 
         private final String displayName;
 
         Properties(String displayName) {
             this.displayName = displayName;
+        }
+
+        public static Properties toEnum(String name) {
+            for (Properties myEnum : Properties.values()) {
+                if (myEnum.name().equals(name)) {
+                    return myEnum;
+                }
+            }
+            return UNKNOWN;
         }
 
         public String getDisplayName() {

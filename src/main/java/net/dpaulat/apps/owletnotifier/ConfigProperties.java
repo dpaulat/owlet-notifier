@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Configuration
 @PropertySource("owlet-notifier.config")
@@ -114,6 +115,22 @@ public class ConfigProperties {
                         ", maximumValue=" + maximumValue +
                         ", repeatTime=" + repeatTime +
                         '}';
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+                Monitor monitor = (Monitor) o;
+                return Objects.equals(name, monitor.name) &&
+                        Objects.equals(minimumValue, monitor.minimumValue) &&
+                        Objects.equals(maximumValue, monitor.maximumValue) &&
+                        Objects.equals(repeatTime, monitor.repeatTime);
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(name, minimumValue, maximumValue, repeatTime);
             }
         }
     }
