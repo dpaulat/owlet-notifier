@@ -66,18 +66,14 @@ public class ScheduledTasks {
 
         for (AylaDevice device : deviceList) {
             // TODO: Update APP_ACTIVE to 1
-            owletApi.updateProperties(device, (name, oldValue, newValue) -> {
-                for (ConfigProperties.Owlet.Monitor monitor : config.getOwlet().getMonitors()) {
-                    if (name.equals(monitor.getName())) {
-                        evaluateMonitor(monitor, device, name, oldValue, newValue);
-                    }
-                }
-            });
+            owletApi.updateProperties(device);
+            for (ConfigProperties.Owlet.Monitor monitor : config.getOwlet().getMonitors()) {
+                evaluateMonitor(monitor, device);
+            }
         }
     }
 
-    private void evaluateMonitor(ConfigProperties.Owlet.Monitor monitor, AylaDevice device, String name,
-                                 String oldValue, String newValue) {
+    private void evaluateMonitor(ConfigProperties.Owlet.Monitor monitor, AylaDevice device) {
         MonitorStatus status;
         if (monitorStatusMap.containsKey(monitor)) {
             status = monitorStatusMap.get(monitor);
@@ -86,16 +82,19 @@ public class ScheduledTasks {
             monitorStatusMap.put(monitor, status);
         }
 
+        String name = monitor.getName();
+        String value = owletApi.getPropertyValue(device, OwletApi.Properties.toEnum(name));
+
         String message = String.format("%s's %s is %s",
                 owletApi.getPropertyValue(device, OwletApi.Properties.BABY_NAME),
-                OwletApi.Properties.toEnum(name).getDisplayName().toLowerCase(), newValue);
-        log.debug("Evaluating {} [{}]: {} -> {}", name, device.getDsn(), oldValue, newValue);
+                OwletApi.Properties.toEnum(name).getDisplayName().toLowerCase(), value);
+        log.debug("Evaluating {} [{}]: {}", name, device.getDsn(), value);
 
-        Integer newIntValue = tryParseInt(newValue);
+        Integer intValue = tryParseInt(value);
 
-        if (newIntValue != null) {
+        if (intValue != null) {
             if (monitor.getMinimumValue() != null) {
-                if (newIntValue < monitor.getMinimumValue()) {
+                if (intValue < monitor.getMinimumValue()) {
                     log.warn(message);
 
                     if (status.getMinimumCondition().hasTimeElapsed(monitor.getRepeatTime())) {
@@ -107,7 +106,7 @@ public class ScheduledTasks {
                 }
             }
             if (monitor.getMaximumValue() != null) {
-                if (newIntValue > monitor.getMaximumValue()) {
+                if (intValue > monitor.getMaximumValue()) {
                     log.warn(message);
 
                     if (status.getMaximumCondition().hasTimeElapsed(monitor.getRepeatTime())) {

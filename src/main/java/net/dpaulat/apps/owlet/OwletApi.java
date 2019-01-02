@@ -53,7 +53,7 @@ public class OwletApi {
         return deviceList;
     }
 
-    public void updateProperties(AylaDevice device, IOwletPropertyUpdated onUpdate) {
+    public void updateProperties(AylaDevice device) {
         List<AylaDevProperty> propertyList = null;
 
         if (authorization != null) {
@@ -70,9 +70,6 @@ public class OwletApi {
             }
 
             for (AylaDevProperty property : propertyList) {
-                if (onUpdate != null) {
-                    onUpdate.callback(property.getName(), propertyMap.get(property.getName()), property.getValue());
-                }
                 propertyMap.put(property.getName(), property.getValue());
             }
         }
