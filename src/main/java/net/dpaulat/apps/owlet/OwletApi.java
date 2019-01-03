@@ -75,7 +75,7 @@ public class OwletApi {
         }
     }
 
-    public String getPropertyValue(AylaDevice device, Properties propertyName) {
+    public String getPropertyValue(AylaDevice device, OwletProperties propertyName) {
         String value = null;
         Map<String, String> propertyMap = null;
 
@@ -90,7 +90,7 @@ public class OwletApi {
         return value;
     }
 
-    public Integer getPropertyIntValue(AylaDevice device, Properties propertyName) {
+    public Integer getPropertyIntValue(AylaDevice device, OwletProperties propertyName) {
         String value = getPropertyValue(device, propertyName);
         Integer intValue = null;
 
@@ -111,83 +111,14 @@ public class OwletApi {
     }
 
     public boolean isSockReady(AylaDevice device) {
-        final Integer baseStationOn = getPropertyIntValue(device, Properties.BASE_STATION_ON);
-        final Integer chargeStatus = getPropertyIntValue(device, Properties.CHARGE_STATUS);
-        final Integer movement = getPropertyIntValue(device, Properties.MOVEMENT);
-        final Integer sockRecentlyPlaced = getPropertyIntValue(device, Properties.SOCK_REC_PLACED);
+        final Integer baseStationOn = getPropertyIntValue(device, OwletProperties.BASE_STATION_ON);
+        final Integer chargeStatus = getPropertyIntValue(device, OwletProperties.CHARGE_STATUS);
+        final Integer movement = getPropertyIntValue(device, OwletProperties.MOVEMENT);
+        final Integer sockRecentlyPlaced = getPropertyIntValue(device, OwletProperties.SOCK_REC_PLACED);
 
         final boolean ready = (baseStationOn == 1 && chargeStatus == 0 && movement == 0 && sockRecentlyPlaced == 0);
 
         return ready;
     }
 
-    public enum Properties {
-        ALRTS_DISABLED("Disable Alerts"),
-        ALRT_SNS_BLE("Alert Sense Ble"),
-        ALRT_SNS_YLW("Alert Sense Yellow"),
-        APP_ACTIVE("App Active"),
-        AVERAGE_DATA("Average Data"),
-        BABY_NAME("Baby"),
-        BASE_STATION_ON("Base Station On"),
-        BATT_LEVEL("Battery Level (%)"),
-        BIRTHDATE("Birthdate"),
-        BLE_MAC_ID("Sock BLE Id"),
-        BLE_RSSI("BLE RSSI"),
-        CHARGE_STATUS("Charge Status"),
-        CRIT_BATT_ALRT("Crit. Battery Alert"),
-        CRIT_OX_ALRT("Crit. Oxygen Alert"),
-        DEVICE_PING("Device Ping"),
-        DISABLE_LOGGED_DATA("Disable Logged Data"),
-        ELEVATION("Elevation"),
-        GENDER("Gender"),
-        HEART_RATE("Heart Rate"),
-        HIGH_HR_ALRT("High HR Alert"),
-        LATITUDE("Latitude"),
-        LIVE_DATA_STREAM("Live Data Stream"),
-        LOCAL_BLE_MAC_ID("Base BLE Mac Id"),
-        LOGGED_DATA_CACHE("Logged Data Cache"),
-        LONGITUDE("Longitude"),
-        LOW_BATT_ALRT("Low Battery Alert"),
-        LOW_BATT_PRCNT("Low Batt. Percent"),
-        LOW_HR_ALRT("Low HR Alert"),
-        LOW_INTEG_READ("Low Integrity Read"),
-        LOW_OX_ALRT("Low Oxygen Alert"),
-        LOW_PA_ALRT("Low Pa Alert"),
-        MOVEMENT("Baby Movement"),
-        NURSERY_MODE("Nursery Mode"),
-        oem_base_version("oem_base_version"),
-        oem_sock_version("oem_sock_version"),
-        ON_BOARDING("On Boarding"),
-        OTA_ERROR("OTA Error"),
-        OTA_STATUS("OTA Status"),
-        OXYGEN_LEVEL("Oxygen Level"),
-        PREMATURE("Premature"),
-        SHARE_DATA("Share Data"),
-        SOCK_CONNECTION("Sock Connection"),
-        SOCK_DISCON_ALRT("Sock Disconnect Alert"),
-        SOCK_DIS_APP_PREF("Sock Dis. App Pref."),
-        SOCK_DIS_NEST_PREF("Sock Dis. Nest Pref."),
-        SOCK_OFF("Sock Off"),
-        SOCK_REC_PLACED("Sock Recently Placed"),
-        UNKNOWN("Unknown property");
-
-        private final String displayName;
-
-        Properties(String displayName) {
-            this.displayName = displayName;
-        }
-
-        public static Properties toEnum(String name) {
-            for (Properties myEnum : Properties.values()) {
-                if (myEnum.name().equals(name)) {
-                    return myEnum;
-                }
-            }
-            return UNKNOWN;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-    }
 }

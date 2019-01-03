@@ -1,13 +1,15 @@
 package net.dpaulat.apps.owletnotifier.monitor;
 
+import net.dpaulat.apps.owlet.OwletProperties;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 public class Monitor {
     private final ConditionStatus status = new ConditionStatus();
-    @NotBlank
-    private String name;
+    @NotNull
+    private OwletProperties property;
     @NotNull
     private ConditionType type;
     @NotNull
@@ -24,12 +26,12 @@ public class Monitor {
         return status;
     }
 
-    public String getName() {
-        return name;
+    public OwletProperties getProperty() {
+        return property;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setProperty(OwletProperties property) {
+        this.property = property;
     }
 
     public ConditionType getType() {
@@ -86,7 +88,7 @@ public class Monitor {
         if (!(o instanceof Monitor)) return false;
         Monitor monitor = (Monitor) o;
         return status.equals(monitor.status) &&
-                name.equals(monitor.name) &&
+                property.equals(monitor.property) &&
                 type == monitor.type &&
                 value.equals(monitor.value) &&
                 Objects.equals(repeatTime, monitor.repeatTime) &&
@@ -97,14 +99,14 @@ public class Monitor {
 
     @Override
     public int hashCode() {
-        return Objects.hash(status, name, type, value, repeatTime, sockReady, activeMessage, deactivateMessage);
+        return Objects.hash(status, property, type, value, repeatTime, sockReady, activeMessage, deactivateMessage);
     }
 
     @Override
     public String toString() {
         return "Monitor{" +
                 "status=" + status +
-                ", name='" + name + '\'' +
+                ", property='" + property + '\'' +
                 ", type=" + type +
                 ", value=" + value +
                 ", repeatTime=" + repeatTime +
