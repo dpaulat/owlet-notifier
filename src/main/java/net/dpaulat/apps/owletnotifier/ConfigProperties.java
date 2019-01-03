@@ -6,6 +6,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -71,9 +72,14 @@ public class ConfigProperties {
         public static class Monitor {
             @NotBlank
             private String name;
-            private Long minimumValue;
-            private Long maximumValue;
+            @NotNull
+            private MonitorType type;
+            private Long value;
             private Long repeatTime;
+            @NotBlank
+            private String activeMessage = "%1$s's %2$s is %3$s";
+            @NotBlank
+            private String deactivateMessage = "%1$s's %2$s is %3$s";
 
             public String getName() {
                 return name;
@@ -83,20 +89,20 @@ public class ConfigProperties {
                 this.name = name;
             }
 
-            public Long getMinimumValue() {
-                return minimumValue;
+            public MonitorType getType() {
+                return type;
             }
 
-            public void setMinimumValue(Long minimumValue) {
-                this.minimumValue = minimumValue;
+            public void setType(MonitorType type) {
+                this.type = type;
             }
 
-            public Long getMaximumValue() {
-                return maximumValue;
+            public Long getValue() {
+                return value;
             }
 
-            public void setMaximumValue(Long maximumValue) {
-                this.maximumValue = maximumValue;
+            public void setValue(Long value) {
+                this.value = value;
             }
 
             public Long getRepeatTime() {
@@ -107,30 +113,43 @@ public class ConfigProperties {
                 this.repeatTime = repeatTime;
             }
 
-            @Override
-            public String toString() {
-                return "Monitor{" +
-                        "name='" + name + '\'' +
-                        ", minimumValue=" + minimumValue +
-                        ", maximumValue=" + maximumValue +
-                        ", repeatTime=" + repeatTime +
-                        '}';
+            public String getActiveMessage() {
+                return activeMessage;
             }
 
-            @Override
-            public boolean equals(Object o) {
-                if (this == o) return true;
-                if (o == null || getClass() != o.getClass()) return false;
-                Monitor monitor = (Monitor) o;
-                return Objects.equals(name, monitor.name) &&
-                        Objects.equals(minimumValue, monitor.minimumValue) &&
-                        Objects.equals(maximumValue, monitor.maximumValue) &&
-                        Objects.equals(repeatTime, monitor.repeatTime);
+            public void setActiveMessage(String activeMessage) {
+                this.activeMessage = activeMessage;
+            }
+
+            public String getDeactivateMessage() {
+                return deactivateMessage;
+            }
+
+            public void setDeactivateMessage(String deactivateMessage) {
+                this.deactivateMessage = deactivateMessage;
             }
 
             @Override
             public int hashCode() {
-                return Objects.hash(name, minimumValue, maximumValue, repeatTime);
+                return Objects.hash(name, type, value, repeatTime, activeMessage, deactivateMessage);
+            }
+
+            @Override
+            public String toString() {
+                return "Monitor{" +
+                        "name='" + name + '\'' +
+                        ", type=" + type +
+                        ", value=" + value +
+                        ", repeatTime=" + repeatTime +
+                        ", activeMessage='" + activeMessage + '\'' +
+                        ", deactivateMessage='" + deactivateMessage + '\'' +
+                        '}';
+            }
+
+            public enum MonitorType {
+                MinimumValue,
+                MaximumValue,
+                Equals
             }
         }
     }

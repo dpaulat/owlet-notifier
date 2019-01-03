@@ -75,36 +75,38 @@ public class ScheduledTasks {
         String name = monitor.getName();
         Integer value = owletApi.getPropertyIntValue(device, OwletApi.Properties.toEnum(name));
 
-        String message = String.format("%s's %s is %s",
+        String activeMessage = String.format(monitor.getActiveMessage(),
+                owletApi.getPropertyValue(device, OwletApi.Properties.BABY_NAME),
+                OwletApi.Properties.toEnum(name).getDisplayName().toLowerCase(), value);
+        String deactivateMessage = String.format(monitor.getDeactivateMessage(),
                 owletApi.getPropertyValue(device, OwletApi.Properties.BABY_NAME),
                 OwletApi.Properties.toEnum(name).getDisplayName().toLowerCase(), value);
         log.debug("Evaluating {} [{}]: {}", name, device.getDsn(), value);
 
         // Ignore if APP_ACTIVE = 0
-        // TODO: Add custom activation/deactivation text
 
         if (value != null) {
-            if (monitor.getMinimumValue() != null) {
-                if (value < monitor.getMinimumValue()) {
-                    log.warn(message);
+            if (monitor.getValue() != null) {
+                if (value < monitor.getValue() && monitor.getType() == ConfigProperties.Owlet.Monitor.MonitorType.MinimumValue) {
+                    log.warn(activeMessage);
 
                     if (status.getMinimumCondition().hasTimeElapsed(monitor.getRepeatTime())) {
                         status.getMinimumCondition().activate();
                     }
                 } else if (status.getMinimumCondition().isActive()) {
-                    log.info(message);
+                    log.info(deactivateMessage);
                     status.getMinimumCondition().deactivate();
                 }
             }
-            if (monitor.getMaximumValue() != null) {
-                if (value > monitor.getMaximumValue()) {
-                    log.warn(message);
+            if (monitor.getValue() != null && monitor.getType() == ConfigProperties.Owlet.Monitor.MonitorType.MaximumValue) {
+                if (value > monitor.getValue()) {
+                    log.warn(activeMessage);
 
                     if (status.getMaximumCondition().hasTimeElapsed(monitor.getRepeatTime())) {
                         status.getMaximumCondition().activate();
                     }
                 } else if (status.getMaximumCondition().isActive()) {
-                    log.info(message);
+                    log.info(deactivateMessage);
                     status.getMaximumCondition().deactivate();
                 }
             }
