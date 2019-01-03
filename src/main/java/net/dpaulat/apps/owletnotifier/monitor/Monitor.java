@@ -5,6 +5,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 public class Monitor {
+    private final ConditionStatus status = new ConditionStatus();
     @NotBlank
     private String name;
     @NotNull
@@ -18,6 +19,10 @@ public class Monitor {
     private String activeMessage = "%1$s's %2$s is %3$s";
     @NotBlank
     private String deactivateMessage = "%1$s's %2$s is %3$s";
+
+    public ConditionStatus getStatus() {
+        return status;
+    }
 
     public String getName() {
         return name;
@@ -80,7 +85,8 @@ public class Monitor {
         if (this == o) return true;
         if (!(o instanceof Monitor)) return false;
         Monitor monitor = (Monitor) o;
-        return name.equals(monitor.name) &&
+        return status.equals(monitor.status) &&
+                name.equals(monitor.name) &&
                 type == monitor.type &&
                 value.equals(monitor.value) &&
                 Objects.equals(repeatTime, monitor.repeatTime) &&
@@ -91,16 +97,18 @@ public class Monitor {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, type, value, repeatTime, sockReady, activeMessage, deactivateMessage);
+        return Objects.hash(status, name, type, value, repeatTime, sockReady, activeMessage, deactivateMessage);
     }
 
     @Override
     public String toString() {
         return "Monitor{" +
-                "name='" + name + '\'' +
+                "status=" + status +
+                ", name='" + name + '\'' +
                 ", type=" + type +
                 ", value=" + value +
                 ", repeatTime=" + repeatTime +
+                ", sockReady=" + sockReady +
                 ", activeMessage='" + activeMessage + '\'' +
                 ", deactivateMessage='" + deactivateMessage + '\'' +
                 '}';
