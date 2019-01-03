@@ -7,6 +7,7 @@ import net.dpaulat.apps.ayla.json.AylaUserRefresh;
 import net.dpaulat.apps.rest.api.RestApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 
 /**
@@ -14,6 +15,7 @@ import org.springframework.web.reactive.function.BodyInserters;
  *
  * @link https://developer.aylanetworks.com/apibrowser/swaggers/UserService
  */
+@Service
 public class AylaUsersApi extends RestApi {
 
     private static final Logger log = LoggerFactory.getLogger(AylaUsersApi.class);

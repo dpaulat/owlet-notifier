@@ -7,14 +7,19 @@ import net.dpaulat.apps.ayla.json.AylaDevProperty;
 import net.dpaulat.apps.ayla.json.AylaDevice;
 import net.dpaulat.apps.owlet.json.OwletApplication;
 import net.dpaulat.apps.util.NumberUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Service
 public class OwletApi {
 
+    @Autowired
     private AylaDeviceApi aylaDeviceApi;
+    @Autowired
     private AylaUsersApi aylaUsersApi;
 
     private OwletApplication owletApplication;
@@ -24,8 +29,6 @@ public class OwletApi {
     private Map<String, Map<String, String>> deviceMap;
 
     public OwletApi() {
-        this.aylaDeviceApi = new AylaDeviceApi();
-        this.aylaUsersApi = new AylaUsersApi();
         this.authorization = null;
         this.deviceList = null;
         this.deviceMap = new HashMap<>();

@@ -5,6 +5,7 @@ import net.dpaulat.apps.rest.api.RestApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
  *
  * @link https://developer.aylanetworks.com/apibrowser/swaggers/DeviceService
  */
+@Service
 public class AylaDeviceApi extends RestApi {
 
     private static final Logger log = LoggerFactory.getLogger(AylaDeviceApi.class);
