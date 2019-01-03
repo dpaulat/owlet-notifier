@@ -6,16 +6,13 @@ import net.dpaulat.apps.ayla.json.AylaAuthorizationByEmail;
 import net.dpaulat.apps.ayla.json.AylaDevProperty;
 import net.dpaulat.apps.ayla.json.AylaDevice;
 import net.dpaulat.apps.owlet.json.OwletApplication;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.dpaulat.apps.util.NumberUtils;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class OwletApi {
-
-    private static final Logger log = LoggerFactory.getLogger(OwletApi.class);
 
     private AylaDeviceApi aylaDeviceApi;
     private AylaUsersApi aylaUsersApi;
@@ -90,8 +87,35 @@ public class OwletApi {
         return value;
     }
 
+    public Integer getPropertyIntValue(AylaDevice device, Properties propertyName) {
+        String value = getPropertyValue(device, propertyName);
+        Integer intValue = null;
+
+        if (value != null) {
+            try {
+                intValue = NumberUtils.tryParseInt(value);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return intValue;
+    }
+
+
     public boolean isSignedIn() {
         return authorization != null;
+    }
+
+    public boolean isSockReady(AylaDevice device) {
+        final Integer baseStationOn = getPropertyIntValue(device, Properties.BASE_STATION_ON);
+        final Integer chargeStatus = getPropertyIntValue(device, Properties.CHARGE_STATUS);
+        final Integer movement = getPropertyIntValue(device, Properties.MOVEMENT);
+        final Integer sockRecentlyPlaced = getPropertyIntValue(device, Properties.SOCK_REC_PLACED);
+
+        final boolean ready = (baseStationOn == 1 && chargeStatus == 0 && movement == 0 && sockRecentlyPlaced == 0);
+
+        return ready;
     }
 
     public enum Properties {

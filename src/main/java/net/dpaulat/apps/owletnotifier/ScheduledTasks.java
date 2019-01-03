@@ -35,17 +35,6 @@ public class ScheduledTasks {
         this.monitorStatusMap = new HashMap<>();
     }
 
-    private static Integer tryParseInt(String value) {
-        Integer i = null;
-
-        try {
-            i = Integer.valueOf(value);
-        } catch (NumberFormatException ex) {
-        }
-
-        return i;
-    }
-
     @Scheduled(fixedRate = 10000)
     public void process() {
         if (!initialized) {
@@ -66,6 +55,7 @@ public class ScheduledTasks {
 
         for (AylaDevice device : deviceList) {
             // TODO: Update APP_ACTIVE to 1
+            // TODO: Change rate if base station is off or the sock is charging (5 minutes vs. 10 seconds)
             owletApi.updateProperties(device);
             for (ConfigProperties.Owlet.Monitor monitor : config.getOwlet().getMonitors()) {
                 evaluateMonitor(monitor, device);
@@ -83,18 +73,19 @@ public class ScheduledTasks {
         }
 
         String name = monitor.getName();
-        String value = owletApi.getPropertyValue(device, OwletApi.Properties.toEnum(name));
+        Integer value = owletApi.getPropertyIntValue(device, OwletApi.Properties.toEnum(name));
 
         String message = String.format("%s's %s is %s",
                 owletApi.getPropertyValue(device, OwletApi.Properties.BABY_NAME),
                 OwletApi.Properties.toEnum(name).getDisplayName().toLowerCase(), value);
         log.debug("Evaluating {} [{}]: {}", name, device.getDsn(), value);
 
-        Integer intValue = tryParseInt(value);
+        // Ignore if APP_ACTIVE = 0
+        // TODO: Add custom activation/deactivation text
 
-        if (intValue != null) {
+        if (value != null) {
             if (monitor.getMinimumValue() != null) {
-                if (intValue < monitor.getMinimumValue()) {
+                if (value < monitor.getMinimumValue()) {
                     log.warn(message);
 
                     if (status.getMinimumCondition().hasTimeElapsed(monitor.getRepeatTime())) {
@@ -106,7 +97,7 @@ public class ScheduledTasks {
                 }
             }
             if (monitor.getMaximumValue() != null) {
-                if (intValue > monitor.getMaximumValue()) {
+                if (value > monitor.getMaximumValue()) {
                     log.warn(message);
 
                     if (status.getMaximumCondition().hasTimeElapsed(monitor.getRepeatTime())) {
