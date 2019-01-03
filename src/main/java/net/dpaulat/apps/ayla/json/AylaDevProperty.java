@@ -10,18 +10,18 @@ public class AylaDevProperty {
 
     private String type;
     private String name;
-    @JsonProperty(value = "base-type")
+    @JsonProperty(value = "base_type")
     private String baseType;
-    @JsonProperty(value = "read-only")
+    @JsonProperty(value = "read_only")
     private Boolean readOnly;
     private String direction;
     private String scope;
-    @JsonProperty(value = "data-updated-at")
+    @JsonProperty(value = "data_updated_at")
     private String dataUpdatedAt;
     private Long key;
-    @JsonProperty(value = "device-key")
+    @JsonProperty(value = "device_key")
     private Long deviceKey;
-    @JsonProperty(value = "product-name")
+    @JsonProperty(value = "product_name")
     private String productName;
 
     @JsonProperty(value = "track_only_changes")
