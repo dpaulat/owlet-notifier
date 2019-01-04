@@ -7,8 +7,11 @@ import net.dpaulat.apps.ayla.json.AylaUserRefresh;
 import net.dpaulat.apps.rest.api.RestApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * API to interact with the Ayla User Service
@@ -24,8 +27,8 @@ public class AylaUsersApi extends RestApi {
     private static final String signInUri = "/sign_in";
     private static final String refreshTokenUri = "/refresh_token";
 
-    public AylaUsersApi() {
-        super(baseUrl);
+    public AylaUsersApi(@NotNull ApplicationContext context) {
+        super(context, baseUrl);
     }
 
     public AylaAuthorizationByEmail signIn(String email, String password, AylaApplication application) {
@@ -39,7 +42,7 @@ public class AylaUsersApi extends RestApi {
         }, BodyInserters.fromObject(signInRequest), AylaAuthorizationByEmail.class);
 
         if (signInResponse != null) {
-            log.info("Sign in successful");
+            log.info("Sign in successful, expiration in {} seconds", signInResponse.getExpiresIn());
             log.debug(signInResponse.toString());
         } else {
             log.info("Sign in unsuccessful");
@@ -58,7 +61,7 @@ public class AylaUsersApi extends RestApi {
         }, BodyInserters.fromObject(refreshTokenRequest), AylaAuthorizationByEmail.class);
 
         if (signInResponse != null) {
-            log.info("Refresh successful");
+            log.info("Refresh successful, expiration in {} seconds", signInResponse.getExpiresIn());
             log.debug(signInResponse.toString());
         } else {
             log.info("Refresh unsuccessful");

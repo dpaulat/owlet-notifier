@@ -2,6 +2,8 @@ package net.dpaulat.apps.rest.api;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,9 +20,11 @@ public class RestApi {
 
     private static final Logger log = LoggerFactory.getLogger(RestApi.class);
 
+    private final ApplicationContext context;
     private final WebClient webClient;
 
-    protected RestApi(String baseUrl) {
+    protected RestApi(ApplicationContext context, String baseUrl) {
+        this.context = context;
         this.webClient = WebClient.create(baseUrl);
     }
 
@@ -43,6 +47,11 @@ public class RestApi {
             response = webResponse.toIterable();
         } catch (WebClientResponseException ex) {
             log.error(ex.getMessage());
+
+            if (ex.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                log.error("Fatal client authorization error, exiting");
+                SpringApplication.exit(context, () -> -1);
+            }
         }
 
         return response;
@@ -70,6 +79,11 @@ public class RestApi {
             response = webResponse.block();
         } catch (WebClientResponseException ex) {
             log.error(ex.getMessage());
+
+            if (ex.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                log.error("Fatal client authorization error, exiting");
+                SpringApplication.exit(context, () -> -1);
+            }
         }
 
         return response;

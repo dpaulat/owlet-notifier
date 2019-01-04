@@ -5,10 +5,12 @@ import net.dpaulat.apps.owlet.OwletProperties;
 import net.dpaulat.apps.rest.api.RestApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +29,8 @@ public class AylaDeviceApi extends RestApi {
     private static final String retrieveDevicePropertiesUri = "/dsns/%s/properties";
     private static final String createDatapointUri = "/dsns/%s/properties/%s/datapoints";
 
-    public AylaDeviceApi() {
-        super(baseUrl);
+    public AylaDeviceApi(@NotNull ApplicationContext context) {
+        super(context, baseUrl);
     }
 
     public List<AylaDevice> retrieveDevices(AylaAuthorizationByEmail auth) {

@@ -7,9 +7,9 @@ import net.dpaulat.apps.ayla.json.AylaDevProperty;
 import net.dpaulat.apps.ayla.json.AylaDevice;
 import net.dpaulat.apps.owlet.json.OwletApplication;
 import net.dpaulat.apps.util.NumberUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,10 +17,8 @@ import java.util.Map;
 @Service
 public class OwletApi {
 
-    @Autowired
-    private AylaDeviceApi aylaDeviceApi;
-    @Autowired
-    private AylaUsersApi aylaUsersApi;
+    private final AylaDeviceApi aylaDeviceApi;
+    private final AylaUsersApi aylaUsersApi;
 
     private OwletApplication owletApplication;
 
@@ -28,21 +26,26 @@ public class OwletApi {
     private List<AylaDevice> deviceList;
     private Map<String, Map<String, String>> deviceMap;
 
-    public OwletApi() {
+    public OwletApi(@NotNull AylaDeviceApi aylaDeviceApi, @NotNull AylaUsersApi aylaUsersApi) {
+        this.aylaDeviceApi = aylaDeviceApi;
+        this.aylaUsersApi = aylaUsersApi;
         this.authorization = null;
         this.deviceList = null;
         this.deviceMap = new HashMap<>();
         this.owletApplication = new OwletApplication();
     }
 
-    public void signIn(String email, String password) {
+    public AylaAuthorizationByEmail signIn(String email, String password) {
         authorization = aylaUsersApi.signIn(email, password, owletApplication);
+        return authorization;
     }
 
-    public void refreshToken() {
+    public AylaAuthorizationByEmail refreshToken() {
         if (authorization != null) {
             authorization = aylaUsersApi.refreshToken(authorization);
         }
+
+        return authorization;
     }
 
     public List<AylaDevice> retrieveDevices() {

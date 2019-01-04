@@ -13,7 +13,7 @@ public class AylaAuthorizationByEmail {
     @JsonProperty(value = "refresh_token")
     private String refreshToken;
     @JsonProperty(value = "expires_in")
-    private Integer expiresIn;
+    private Long expiresIn;
     private String role;
     @JsonProperty(value = "role_tags")
     private AylaRoleTag[] roleTags;
@@ -37,11 +37,11 @@ public class AylaAuthorizationByEmail {
         this.refreshToken = refreshToken;
     }
 
-    public Integer getExpiresIn() {
+    public Long getExpiresIn() {
         return expiresIn;
     }
 
-    public void setExpiresIn(Integer expiresIn) {
+    public void setExpiresIn(Long expiresIn) {
         this.expiresIn = expiresIn;
     }
 
