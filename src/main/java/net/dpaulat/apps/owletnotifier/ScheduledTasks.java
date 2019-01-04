@@ -49,6 +49,11 @@ public class ScheduledTasks {
             }
 
             deviceList = owletApi.retrieveDevices();
+
+            for (AylaDevice device : deviceList) {
+                owletApi.updateProperties(device);
+                owletApi.setAppActive(device);
+            }
         }
 
         // TODO: Determine when to refresh access token

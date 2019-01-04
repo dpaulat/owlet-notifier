@@ -35,7 +35,8 @@ public class AylaUsersApi extends RestApi {
         log.info("Signing in user {}", email);
         log.debug(signInRequest.toString());
 
-        signInResponse = post(signInUri, BodyInserters.fromObject(signInRequest), AylaAuthorizationByEmail.class);
+        signInResponse = post(signInUri, httpHeaders -> {
+        }, BodyInserters.fromObject(signInRequest), AylaAuthorizationByEmail.class);
 
         if (signInResponse != null) {
             log.info("Sign in successful");
@@ -53,7 +54,8 @@ public class AylaUsersApi extends RestApi {
 
         log.info("Refreshing access token");
 
-        signInResponse = post(refreshTokenUri, BodyInserters.fromObject(refreshTokenRequest), AylaAuthorizationByEmail.class);
+        signInResponse = post(refreshTokenUri, httpHeaders -> {
+        }, BodyInserters.fromObject(refreshTokenRequest), AylaAuthorizationByEmail.class);
 
         if (signInResponse != null) {
             log.info("Refresh successful");

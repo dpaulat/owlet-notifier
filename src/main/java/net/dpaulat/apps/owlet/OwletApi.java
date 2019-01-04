@@ -105,6 +105,9 @@ public class OwletApi {
         return intValue;
     }
 
+    public void setAppActive(AylaDevice device) {
+        aylaDeviceApi.createDatapoint(authorization, device, OwletProperties.APP_ACTIVE, "1");
+    }
 
     public boolean isSignedIn() {
         return authorization != null;

@@ -1,11 +1,13 @@
 package net.dpaulat.apps.ayla.api;
 
 import net.dpaulat.apps.ayla.json.*;
+import net.dpaulat.apps.owlet.OwletProperties;
 import net.dpaulat.apps.rest.api.RestApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,7 @@ public class AylaDeviceApi extends RestApi {
     private static final String baseUrl = "https://user-field.aylanetworks.com/apiv1";
     private static final String retrieveDevicesUri = "/devices";
     private static final String retrieveDevicePropertiesUri = "/dsns/%s/properties";
+    private static final String createDatapointUri = "/dsns/%s/properties/%s/datapoints";
 
     public AylaDeviceApi() {
         super(baseUrl);
@@ -63,5 +66,20 @@ public class AylaDeviceApi extends RestApi {
         }
 
         return propertyList;
+    }
+
+    public AylaAddDataPointOutput createDatapoint(AylaAuthorizationByEmail auth, AylaDevice device,
+                                                  OwletProperties property, String value) {
+
+        AylaAddDataPointInput addDataPointInput = new AylaAddDataPointInput(value);
+
+        String uri = String.format(createDatapointUri, device.getDsn(), property.name());
+        AylaAddDataPointOutput addDataPointOutput = post(uri, httpHeaders ->
+                        httpHeaders.add(HttpHeaders.AUTHORIZATION, "authToken " + auth.getAccessToken()),
+                BodyInserters.fromObject(addDataPointInput), AylaAddDataPointOutput.class);
+
+        log.debug(addDataPointOutput.toString());
+
+        return addDataPointOutput;
     }
 }

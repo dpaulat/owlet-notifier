@@ -48,12 +48,14 @@ public class RestApi {
         return response;
     }
 
-    protected <T> T post(String uri, BodyInserter<?, ? super ClientHttpRequest> body, Class<T> responseType) {
+    protected <T> T post(String uri, Consumer<HttpHeaders> headersConsumer,
+                         BodyInserter<?, ? super ClientHttpRequest> body, Class<T> responseType) {
 
         Mono<T> webResponse = webClient
                 .post()
                 .uri(uri)
                 .contentType(MediaType.APPLICATION_JSON)
+                .headers(headersConsumer)
                 .body(body)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
