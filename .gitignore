@@ -3,7 +3,12 @@
 ####################
 
 # User configuration
+application.properties
 owlet-notifier.config
+
+# User keystore and certificates
+*.crt
+*.p12
 
 
 ####################
