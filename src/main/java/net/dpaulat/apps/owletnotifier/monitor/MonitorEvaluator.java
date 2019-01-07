@@ -3,20 +3,25 @@ package net.dpaulat.apps.owletnotifier.monitor;
 import net.dpaulat.apps.ayla.json.AylaDevice;
 import net.dpaulat.apps.owlet.OwletApi;
 import net.dpaulat.apps.owlet.OwletProperties;
+import net.dpaulat.apps.owletnotifier.events.OwletEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+
+import javax.validation.constraints.NotNull;
 
 @Service
 public class MonitorEvaluator {
 
     private static final Logger log = LoggerFactory.getLogger(MonitorEvaluator.class);
 
-    @Autowired
-    private OwletApi owletApi;
+    private final @NotNull ApplicationEventPublisher applicationEventPublisher;
+    private final @NotNull OwletApi owletApi;
 
-    public MonitorEvaluator() {
+    public MonitorEvaluator(@NotNull ApplicationEventPublisher applicationEventPublisher, @NotNull OwletApi owletApi) {
+        this.applicationEventPublisher = applicationEventPublisher;
+        this.owletApi = owletApi;
     }
 
     public void evaluate(AylaDevice device, Monitor monitor) {
@@ -35,6 +40,7 @@ public class MonitorEvaluator {
 
                 if (!monitor.getStatus().isActive() || monitor.getStatus().readyToRepeat(monitor.getRepeatTime())) {
                     monitor.getStatus().activate();
+                    applicationEventPublisher.publishEvent(new OwletEvent(this, activeMessage));
                 }
             } else if (monitor.getStatus().isActive()) {
                 String deactivateMessage = String.format(monitor.getDeactivateMessage(),
@@ -43,6 +49,7 @@ public class MonitorEvaluator {
 
                 log.info(deactivateMessage);
                 monitor.getStatus().deactivate();
+                applicationEventPublisher.publishEvent(new OwletEvent(this, deactivateMessage));
             }
         }
     }
