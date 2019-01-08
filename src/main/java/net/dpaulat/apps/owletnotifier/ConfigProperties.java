@@ -17,6 +17,7 @@ import java.util.List;
 public class ConfigProperties {
 
     private final Owlet owlet = new Owlet();
+    private final Alexa alexa = new Alexa();
 
     protected ConfigProperties() {
     }
@@ -25,10 +26,15 @@ public class ConfigProperties {
         return owlet;
     }
 
+    public Alexa getAlexa() {
+        return alexa;
+    }
+
     @Override
     public String toString() {
         return "ConfigProperties{" +
                 "owlet=" + owlet +
+                "alexa=" + alexa +
                 '}';
     }
 
@@ -65,6 +71,35 @@ public class ConfigProperties {
                     "monitors=" + monitors +
                     ", email='" + email + '\'' +
                     ", password='***'" +
+                    '}';
+        }
+    }
+
+    public static class Alexa {
+        private String skillId;
+        private String cardTitle;
+
+        public String getSkillId() {
+            return skillId;
+        }
+
+        public void setSkillId(String skillId) {
+            this.skillId = skillId;
+        }
+
+        public String getCardTitle() {
+            return cardTitle;
+        }
+
+        public void setCardTitle(String cardTitle) {
+            this.cardTitle = cardTitle;
+        }
+
+        @Override
+        public String toString() {
+            return "Alexa{" +
+                    "skillId='" + skillId + '\'' +
+                    "cardTitle='" + cardTitle + '\'' +
                     '}';
         }
     }
