@@ -13,23 +13,14 @@ public class AppActivityTask implements IOwletTask {
     }
 
     @Override
-    public long rate(boolean baseStationOn) {
-        long rate;
-        if (baseStationOn) {
-            rate = SchedulerTypes.Frames.THIRTY_SECONDS;
-        } else {
-            rate = SchedulerTypes.Frames.FIVE_MINUTES;
-        }
-        return rate;
-    }
-
-    @Override
-    public long phase(boolean baseStationOn) {
-        return 0;
+    public long period() {
+        return SchedulerTypes.Seconds.THIRTY_SECONDS;
     }
 
     @Override
     public void run(AylaDevice device) {
-        owletApi.setAppActive(device);
+        if (owletApi.isMonitoringEnabled()) {
+            owletApi.setAppActive(device);
+        }
     }
 }

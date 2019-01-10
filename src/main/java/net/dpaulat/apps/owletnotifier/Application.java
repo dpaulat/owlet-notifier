@@ -25,7 +25,9 @@ public class Application {
                                                     @NotNull FallbackIntentHandler fallbackIntentHandler,
                                                     @NotNull LaunchRequestHandler launchRequestHandler,
                                                     @NotNull ReadVitalsIntentHandler readVitalsIntentHandler,
-                                                    @NotNull SessionEndedRequestHandler sessionEndedRequestHandler) {
+                                                    @NotNull SessionEndedRequestHandler sessionEndedRequestHandler,
+                                                    @NotNull StartMonitoringIntentHandler startMonitoringIntentHandler,
+                                                    @NotNull StopMonitoringIntentHandler stopMonitoringIntentHandler) {
         ServletRegistrationBean<OwletNotifierSkillServlet> bean = new ServletRegistrationBean<>(
                 new OwletNotifierSkillServlet(config,
                         cancelAndStopIntentHandler,
@@ -33,7 +35,9 @@ public class Application {
                         fallbackIntentHandler,
                         launchRequestHandler,
                         readVitalsIntentHandler,
-                        sessionEndedRequestHandler),
+                        sessionEndedRequestHandler,
+                        startMonitoringIntentHandler,
+                        stopMonitoringIntentHandler),
                 "/alexa");
         bean.setLoadOnStartup(1);
         return bean;

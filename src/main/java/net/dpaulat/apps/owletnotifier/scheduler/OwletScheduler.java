@@ -3,7 +3,6 @@ package net.dpaulat.apps.owletnotifier.scheduler;
 import net.dpaulat.apps.ayla.json.AylaAuthorizationByEmail;
 import net.dpaulat.apps.ayla.json.AylaDevice;
 import net.dpaulat.apps.owlet.OwletApi;
-import net.dpaulat.apps.owlet.OwletProperties;
 import net.dpaulat.apps.owletnotifier.ConfigProperties;
 import net.dpaulat.apps.owletnotifier.monitor.MonitorEvaluator;
 import org.slf4j.Logger;
@@ -15,7 +14,9 @@ import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class OwletScheduler {
@@ -27,8 +28,8 @@ public class OwletScheduler {
     private final @NotNull OwletApi owletApi;
     private final @NotNull RefreshTokenTask refreshTokenTask;
     private final List<IOwletTask> periodicTaskList;
+    private final Map<IOwletTask, Long> taskLastRunMap;
     private boolean initialized;
-    private long frameCounter;
     private List<AylaDevice> deviceList;
 
     public OwletScheduler(@NotNull ApplicationContext context, @NotNull ConfigProperties config,
@@ -39,12 +40,13 @@ public class OwletScheduler {
         this.owletApi = owletApi;
         this.refreshTokenTask = refreshTokenTask;
         this.initialized = false;
-        this.frameCounter = 0;
         this.deviceList = null;
 
         this.periodicTaskList = new ArrayList<>();
         periodicTaskList.add(new AppActivityTask(owletApi));
         periodicTaskList.add(new MonitorEvaluatorTask(config, owletApi, monitorEvaluator));
+
+        this.taskLastRunMap = new HashMap<>();
     }
 
     @Scheduled(fixedRate = SchedulerTypes.FRAME_TIME)
@@ -78,19 +80,25 @@ public class OwletScheduler {
         initialized = true;
     }
 
+    private boolean periodHasElapsed(IOwletTask task, long taskLastRun) {
+        final long epsilon = SchedulerTypes.FRAME_TIME / 2;
+        return (taskLastRun + task.period() - epsilon <= System.currentTimeMillis());
+    }
+
     private void runOnce() {
         for (AylaDevice device : deviceList) {
-            Integer baseStationOnInt = owletApi.getPropertyIntValue(device, OwletProperties.BASE_STATION_ON);
-            boolean baseStationOn = (baseStationOnInt != 0);
-
             for (IOwletTask task : periodicTaskList) {
-                if (frameCounter % task.rate(baseStationOn) == task.phase(baseStationOn)) {
+                Long taskLastRun = taskLastRunMap.get(task);
+                if (taskLastRun == null || periodHasElapsed(task, taskLastRun)) {
+                    // Log time task was started
+                    taskLastRun = System.currentTimeMillis();
+                    taskLastRunMap.put(task, taskLastRun);
+
+                    // Run task
                     task.run(device);
                 }
             }
         }
-
-        frameCounter++;
     }
 
 }

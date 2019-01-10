@@ -11,6 +11,7 @@ import net.dpaulat.apps.owletnotifier.ConfigProperties;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,17 +33,24 @@ public class ReadVitalsIntentHandler implements RequestHandler {
     @Override
     public Optional<Response> handle(HandlerInput handlerInput) {
         String speechText;
-        AylaDevice device = owletApi.getDefaultDevice();
+        List<AylaDevice> devices = owletApi.getDevices();
 
-        if (device == null) {
+        if (devices == null || devices.size() == 0) {
             speechText = "Cannot find device to read vitals from.";
+        } else if (!owletApi.isMonitoringEnabled()) {
+            speechText = "Monitoring is currently disabled.";
         } else {
-            String babyName = owletApi.getPropertyValue(device, OwletProperties.BABY_NAME);
-            String heartRate = owletApi.getPropertyValue(device, OwletProperties.HEART_RATE);
-            String oxygenLevel = owletApi.getPropertyValue(device, OwletProperties.OXYGEN_LEVEL);
+            StringBuilder speechTextBuilder = new StringBuilder();
+            for (AylaDevice device : devices) {
+                String babyName = owletApi.getPropertyValue(device, OwletProperties.BABY_NAME);
+                String heartRate = owletApi.getPropertyValue(device, OwletProperties.HEART_RATE);
+                String oxygenLevel = owletApi.getPropertyValue(device, OwletProperties.OXYGEN_LEVEL);
 
-            speechText = String.format("%s's heart rate is %s, and oxygen level is %s.", babyName, heartRate,
-                    oxygenLevel);
+                speechTextBuilder.append(String.format("%s's heart rate is %s, and oxygen level is %s. ", babyName,
+                        heartRate, oxygenLevel));
+            }
+
+            speechText = speechTextBuilder.toString();
         }
 
         return handlerInput.getResponseBuilder()

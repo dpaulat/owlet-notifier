@@ -16,14 +16,18 @@ public class OwletNotifierSkillServlet extends SkillServlet {
                                      @NotNull FallbackIntentHandler fallbackIntentHandler,
                                      @NotNull LaunchRequestHandler launchRequestHandler,
                                      @NotNull ReadVitalsIntentHandler readVitalsIntentHandler,
-                                     @NotNull SessionEndedRequestHandler sessionEndedRequestHandler) {
+                                     @NotNull SessionEndedRequestHandler sessionEndedRequestHandler,
+                                     @NotNull StartMonitoringIntentHandler startMonitoringIntentHandler,
+                                     @NotNull StopMonitoringIntentHandler stopMonitoringIntentHandler) {
         super(getSkill(config,
                 cancelAndStopIntentHandler,
                 helpIntentHandler,
                 fallbackIntentHandler,
                 launchRequestHandler,
                 readVitalsIntentHandler,
-                sessionEndedRequestHandler));
+                sessionEndedRequestHandler,
+                startMonitoringIntentHandler,
+                stopMonitoringIntentHandler));
     }
 
     private static Skill getSkill(ConfigProperties config, RequestHandler... handlers) {

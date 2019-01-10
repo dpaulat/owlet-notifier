@@ -28,8 +28,9 @@ public class LaunchRequestHandler implements RequestHandler {
     @Override
     public Optional<Response> handle(HandlerInput handlerInput) {
         String speechText = "Welcome to the Owlet Notifier.";
+        String audio = "<audio src='soundbank://soundlibrary/human/amzn_sfx_baby_cry_01'/>";
         return handlerInput.getResponseBuilder()
-                .withSpeech(speechText)
+                .withSpeech(speechText + audio)
                 .withSimpleCard(config.getAlexa().getCardTitle(), speechText)
                 .withReprompt(speechText)
                 .build();
