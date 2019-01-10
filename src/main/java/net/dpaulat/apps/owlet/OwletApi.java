@@ -35,6 +35,14 @@ public class OwletApi {
         this.owletApplication = new OwletApplication();
     }
 
+    public AylaDevice getDefaultDevice() {
+        AylaDevice device = null;
+        if (deviceList != null && deviceList.size() > 0) {
+            device = deviceList.get(0);
+        }
+        return device;
+    }
+
     public AylaAuthorizationByEmail signIn(String email, String password) {
         authorization = aylaUsersApi.signIn(email, password, owletApplication);
         return authorization;
