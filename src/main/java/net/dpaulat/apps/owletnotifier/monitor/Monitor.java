@@ -13,7 +13,7 @@ public class Monitor {
     @NotNull
     private ConditionType type;
     @NotNull
-    private Long value;
+    private Integer value;
     private Long repeatTime;
     @NotNull
     private Boolean sockReady = false;
@@ -42,11 +42,11 @@ public class Monitor {
         this.type = type;
     }
 
-    public Long getValue() {
+    public Integer getValue() {
         return value;
     }
 
-    public void setValue(Long value) {
+    public void setValue(Integer value) {
         this.value = value;
     }
 

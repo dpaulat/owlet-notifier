@@ -46,12 +46,7 @@ public class RestApi {
         try {
             response = webResponse.toIterable();
         } catch (WebClientResponseException ex) {
-            log.error(ex.getMessage());
-
-            if (ex.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-                log.error("Fatal client authorization error, exiting");
-                SpringApplication.exit(context, () -> -1);
-            }
+            handleWebClientResponseException(ex);
         }
 
         return response;
@@ -78,14 +73,18 @@ public class RestApi {
         try {
             response = webResponse.block();
         } catch (WebClientResponseException ex) {
-            log.error(ex.getMessage());
-
-            if (ex.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-                log.error("Fatal client authorization error, exiting");
-                SpringApplication.exit(context, () -> -1);
-            }
+            handleWebClientResponseException(ex);
         }
 
         return response;
+    }
+
+    private void handleWebClientResponseException(WebClientResponseException ex) {
+        log.error(ex.getMessage());
+
+        if (ex.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+            log.error("Fatal client authorization error, exiting");
+            SpringApplication.exit(context, () -> -1);
+        }
     }
 }

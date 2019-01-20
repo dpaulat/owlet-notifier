@@ -1,12 +1,19 @@
 package net.dpaulat.apps.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class NumberUtils {
+
+    private static final Logger log = LoggerFactory.getLogger(NumberUtils.class);
+
     public static Integer tryParseInt(String value) {
         Integer i = null;
 
         try {
             i = Integer.valueOf(value);
         } catch (NumberFormatException ex) {
+            log.debug("Cannot parse integer: {}", value);
         }
 
         return i;

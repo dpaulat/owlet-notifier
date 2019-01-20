@@ -25,19 +25,18 @@ public class OwletApi {
     private final AylaUsersApi aylaUsersApi;
 
     private final OwletApplication owletApplication;
-
+    private final Map<String, Map<String, String>> deviceMap;
     private AylaAuthorizationByEmail authorization;
     private List<AylaDevice> deviceList;
-    private Map<String, Map<String, String>> deviceMap;
     private boolean monitoringEnabled;
 
     public OwletApi(@NotNull AylaDeviceApi aylaDeviceApi, @NotNull AylaUsersApi aylaUsersApi) {
         this.aylaDeviceApi = aylaDeviceApi;
         this.aylaUsersApi = aylaUsersApi;
         this.owletApplication = new OwletApplication();
+        this.deviceMap = new HashMap<>();
         this.authorization = null;
         this.deviceList = null;
-        this.deviceMap = new HashMap<>();
         this.monitoringEnabled = false;
     }
 

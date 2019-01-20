@@ -11,10 +11,10 @@ public class AylaApplication {
     @JsonProperty(value = "app_secret")
     private String appSecret;
 
-    public AylaApplication() {
+    protected AylaApplication() {
     }
 
-    public AylaApplication(String appId, String appSecret) {
+    protected AylaApplication(String appId, String appSecret) {
         this.appId = appId;
         this.appSecret = appSecret;
     }
