@@ -26,14 +26,14 @@ public class MonitorEvaluator {
 
     public void evaluate(AylaDevice device, Monitor monitor) {
         OwletProperties property = monitor.getProperty();
-        Integer value = owletApi.getPropertyIntValue(device, property);
+        Integer value = owletApi.getPropertyValue(device, property, Integer.class);
 
         log.debug("Evaluating {} [{}]: {}", property.getDisplayName(), device.getDsn(), value);
 
         if (value != null && !monitor.getSockReady() || owletApi.isSockReady(device)) {
             if (monitor.getType().getCondition().isConditionActive(monitor, value)) {
                 String activeMessage = String.format(monitor.getActiveMessage(),
-                        owletApi.getPropertyValue(device, OwletProperties.BABY_NAME),
+                        owletApi.getPropertyValue(device, OwletProperties.BABY_NAME, String.class),
                         property.getDisplayName().toLowerCase(), value);
 
                 log.warn(activeMessage);
@@ -44,7 +44,7 @@ public class MonitorEvaluator {
                 }
             } else if (monitor.getStatus().isActive()) {
                 String deactivateMessage = String.format(monitor.getDeactivateMessage(),
-                        owletApi.getPropertyValue(device, OwletProperties.BABY_NAME),
+                        owletApi.getPropertyValue(device, OwletProperties.BABY_NAME, String.class),
                         property.getDisplayName().toLowerCase(), value);
 
                 log.info(deactivateMessage);

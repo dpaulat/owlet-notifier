@@ -35,6 +35,7 @@ public class ReadVitalsIntentHandler implements RequestHandler {
         String speechText;
         List<AylaDevice> devices = owletApi.getDevices();
 
+
         if (devices == null || devices.size() == 0) {
             speechText = "Cannot find device to read vitals from.";
         } else if (!owletApi.isMonitoringEnabled()) {
@@ -42,12 +43,26 @@ public class ReadVitalsIntentHandler implements RequestHandler {
         } else {
             StringBuilder speechTextBuilder = new StringBuilder();
             for (AylaDevice device : devices) {
-                String babyName = owletApi.getPropertyValue(device, OwletProperties.BABY_NAME);
-                String heartRate = owletApi.getPropertyValue(device, OwletProperties.HEART_RATE);
-                String oxygenLevel = owletApi.getPropertyValue(device, OwletProperties.OXYGEN_LEVEL);
+                final String babyName = owletApi.getPropertyValue(device, OwletProperties.BABY_NAME, String.class);
+                final Boolean baseStationOn = owletApi.getPropertyValue(device, OwletProperties.BASE_STATION_ON, Boolean.class);
+                final Integer chargeStatus = owletApi.getPropertyValue(device, OwletProperties.CHARGE_STATUS, Integer.class);
+                final Boolean movement = owletApi.getPropertyValue(device, OwletProperties.MOVEMENT, Boolean.class);
+                final Boolean sockRecentlyPlaced = owletApi.getPropertyValue(device, OwletProperties.SOCK_REC_PLACED, Boolean.class);
+                final Integer heartRate = owletApi.getPropertyValue(device, OwletProperties.HEART_RATE, Integer.class);
+                final Integer oxygenLevel = owletApi.getPropertyValue(device, OwletProperties.OXYGEN_LEVEL, Integer.class);
 
-                speechTextBuilder.append(String.format("%s's heart rate is %s, and oxygen level is %s. ", babyName,
-                        heartRate, oxygenLevel));
+                if (chargeStatus > 0) {
+                    speechTextBuilder.append(String.format("%s's sock is charging. ", babyName));
+                } else if (!baseStationOn) {
+                    speechTextBuilder.append(String.format("%s's base station is off. ", babyName));
+                } else if (sockRecentlyPlaced) {
+                    speechTextBuilder.append(String.format("%s's vitals are pending. ", babyName));
+                } else if (movement) {
+                    speechTextBuilder.append(String.format("%s is moving. ", babyName));
+                } else {
+                    speechTextBuilder.append(String.format("%s's heart rate is %d, and oxygen level is %d. ", babyName,
+                            heartRate, oxygenLevel));
+                }
             }
 
             speechText = speechTextBuilder.toString();

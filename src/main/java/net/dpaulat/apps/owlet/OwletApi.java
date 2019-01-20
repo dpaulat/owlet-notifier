@@ -41,6 +41,35 @@ public class OwletApi {
         this.monitoringEnabled = false;
     }
 
+    @SuppressWarnings("unchecked")
+    private static <T> T asT(Boolean b) {
+        return (T) b;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T asT(Integer i) {
+        return (T) i;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T asT(String s) {
+        return (T) s;
+    }
+
+    private static <T> T parse(String from, Class<T> type) {
+        T value = null;
+
+        if (type == Boolean.class) {
+            value = asT(NumberUtils.tryParseBoolean(from));
+        } else if (type == Integer.class) {
+            value = asT(NumberUtils.tryParseInt(from));
+        } else if (type == String.class) {
+            value = asT(from);
+        }
+
+        return value;
+    }
+
     public AylaAuthorizationByEmail signIn(String email, String password) {
         authorization = aylaUsersApi.signIn(email, password, owletApplication);
         return authorization;
@@ -88,8 +117,8 @@ public class OwletApi {
         }
     }
 
-    public String getPropertyValue(AylaDevice device, OwletProperties propertyName) {
-        String value = null;
+    public <T> T getPropertyValue(AylaDevice device, OwletProperties propertyName, Class<T> type) {
+        T value = null;
         Map<String, String> propertyMap = null;
 
         if (deviceMap.containsKey(device.getDsn())) {
@@ -97,25 +126,10 @@ public class OwletApi {
         }
 
         if (propertyMap != null) {
-            value = propertyMap.get(propertyName.name());
+            value = parse(propertyMap.get(propertyName.name()), type);
         }
 
         return value;
-    }
-
-    public Integer getPropertyIntValue(AylaDevice device, OwletProperties propertyName) {
-        String value = getPropertyValue(device, propertyName);
-        Integer intValue = null;
-
-        if (value != null) {
-            try {
-                intValue = NumberUtils.tryParseInt(value);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        return intValue;
     }
 
     public void setAppActive(AylaDevice device) {
@@ -136,10 +150,10 @@ public class OwletApi {
     }
 
     public boolean isSockReady(AylaDevice device) {
-        final Integer baseStationOn = getPropertyIntValue(device, OwletProperties.BASE_STATION_ON);
-        final Integer chargeStatus = getPropertyIntValue(device, OwletProperties.CHARGE_STATUS);
-        final Integer movement = getPropertyIntValue(device, OwletProperties.MOVEMENT);
-        final Integer sockRecentlyPlaced = getPropertyIntValue(device, OwletProperties.SOCK_REC_PLACED);
+        final Integer baseStationOn = getPropertyValue(device, OwletProperties.BASE_STATION_ON, Integer.class);
+        final Integer chargeStatus = getPropertyValue(device, OwletProperties.CHARGE_STATUS, Integer.class);
+        final Integer movement = getPropertyValue(device, OwletProperties.MOVEMENT, Integer.class);
+        final Integer sockRecentlyPlaced = getPropertyValue(device, OwletProperties.SOCK_REC_PLACED, Integer.class);
 
         return (baseStationOn == 1 && chargeStatus == 0 && movement == 0 && sockRecentlyPlaced == 0);
     }

@@ -11,4 +11,19 @@ public abstract class NumberUtils {
 
         return i;
     }
+
+    public static Boolean tryParseBoolean(String value) {
+        Boolean b = null;
+
+        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
+            b = Boolean.valueOf(value);
+        } else {
+            Integer i = tryParseInt(value);
+            if (i != null) {
+                b = (i > 0);
+            }
+        }
+
+        return b;
+    }
 }
