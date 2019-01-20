@@ -26,7 +26,7 @@ public class MonitorEvaluator {
 
     public void evaluate(AylaDevice device, Monitor monitor) {
         OwletProperties property = monitor.getProperty();
-        Integer value = owletApi.getPropertyValue(device, property, Integer.class);
+        final Integer value = owletApi.getPropertyValue(device, property, Integer.class);
 
         log.debug("Evaluating {} [{}]: {}", property.getDisplayName(), device.getDsn(), value);
 

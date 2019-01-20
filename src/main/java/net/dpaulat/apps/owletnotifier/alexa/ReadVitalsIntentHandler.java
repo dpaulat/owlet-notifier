@@ -51,17 +51,19 @@ public class ReadVitalsIntentHandler implements RequestHandler {
                 final Integer heartRate = owletApi.getPropertyValue(device, OwletProperties.HEART_RATE, Integer.class);
                 final Integer oxygenLevel = owletApi.getPropertyValue(device, OwletProperties.OXYGEN_LEVEL, Integer.class);
 
-                if (chargeStatus > 0) {
+                if (chargeStatus != null && chargeStatus > 0) {
                     speechTextBuilder.append(String.format("%s's sock is charging. ", babyName));
-                } else if (!baseStationOn) {
+                } else if (baseStationOn != null && !baseStationOn) {
                     speechTextBuilder.append(String.format("%s's base station is off. ", babyName));
-                } else if (sockRecentlyPlaced) {
+                } else if (sockRecentlyPlaced != null && sockRecentlyPlaced) {
                     speechTextBuilder.append(String.format("%s's vitals are pending. ", babyName));
-                } else if (movement) {
+                } else if (movement != null && movement) {
                     speechTextBuilder.append(String.format("%s is moving. ", babyName));
-                } else {
+                } else if (heartRate != null && oxygenLevel != null) {
                     speechTextBuilder.append(String.format("%s's heart rate is %d, and oxygen level is %d. ", babyName,
                             heartRate, oxygenLevel));
+                } else {
+                    speechTextBuilder.append(String.format("%s's vitals are pending. ", babyName));
                 }
             }
 

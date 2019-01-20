@@ -149,11 +149,14 @@ public class OwletApi {
     }
 
     public boolean isSockReady(AylaDevice device) {
-        final Integer baseStationOn = getPropertyValue(device, OwletProperties.BASE_STATION_ON, Integer.class);
+        final Boolean baseStationOn = getPropertyValue(device, OwletProperties.BASE_STATION_ON, Boolean.class);
         final Integer chargeStatus = getPropertyValue(device, OwletProperties.CHARGE_STATUS, Integer.class);
-        final Integer movement = getPropertyValue(device, OwletProperties.MOVEMENT, Integer.class);
-        final Integer sockRecentlyPlaced = getPropertyValue(device, OwletProperties.SOCK_REC_PLACED, Integer.class);
+        final Boolean movement = getPropertyValue(device, OwletProperties.MOVEMENT, Boolean.class);
+        final Boolean sockRecentlyPlaced = getPropertyValue(device, OwletProperties.SOCK_REC_PLACED, Boolean.class);
 
-        return (baseStationOn == 1 && chargeStatus == 0 && movement == 0 && sockRecentlyPlaced == 0);
+        return ((baseStationOn != null && baseStationOn) &&
+                (chargeStatus != null && chargeStatus == 0) &&
+                (movement != null && !movement) &&
+                (sockRecentlyPlaced != null && !sockRecentlyPlaced));
     }
 }
