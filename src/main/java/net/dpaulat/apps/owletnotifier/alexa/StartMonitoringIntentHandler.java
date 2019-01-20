@@ -29,7 +29,7 @@ public class StartMonitoringIntentHandler implements RequestHandler {
 
     @Override
     public Optional<Response> handle(HandlerInput handlerInput) {
-        owletApi.setMonitoringEnabled(true);
+        owletApi.setAllMonitoringEnabled(true);
         String speechText = "OK, monitoring is enabled.";
 
         return handlerInput.getResponseBuilder()

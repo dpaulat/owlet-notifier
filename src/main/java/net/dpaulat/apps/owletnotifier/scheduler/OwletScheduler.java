@@ -28,7 +28,7 @@ public class OwletScheduler {
     private final @NotNull OwletApi owletApi;
     private final @NotNull RefreshTokenTask refreshTokenTask;
     private final List<IOwletTask> periodicTaskList;
-    private final Map<IOwletTask, Long> taskLastRunMap;
+    private final Map<String, Map<IOwletTask, Long>> taskLastRunMap;
     private boolean initialized;
     private List<AylaDevice> deviceList;
 
@@ -88,11 +88,12 @@ public class OwletScheduler {
     private void runOnce() {
         for (AylaDevice device : deviceList) {
             for (IOwletTask task : periodicTaskList) {
-                Long taskLastRun = taskLastRunMap.get(task);
+                Map<IOwletTask, Long> deviceTaskLastRunMap = getDeviceTaskLastRunMap(device);
+                Long taskLastRun = deviceTaskLastRunMap.get(task);
                 if (taskLastRun == null || periodHasElapsed(task, taskLastRun)) {
                     // Log time task was started
                     taskLastRun = System.currentTimeMillis();
-                    taskLastRunMap.put(task, taskLastRun);
+                    deviceTaskLastRunMap.put(task, taskLastRun);
 
                     // Run task
                     task.run(device);
@@ -101,4 +102,14 @@ public class OwletScheduler {
         }
     }
 
+    private Map<IOwletTask, Long> getDeviceTaskLastRunMap(AylaDevice device) {
+        Map<IOwletTask, Long> deviceTaskLastRunMap;
+        if (taskLastRunMap.containsKey(device.getDsn())) {
+            deviceTaskLastRunMap = taskLastRunMap.get(device.getDsn());
+        } else {
+            deviceTaskLastRunMap = new HashMap<>();
+            taskLastRunMap.put(device.getDsn(), deviceTaskLastRunMap);
+        }
+        return deviceTaskLastRunMap;
+    }
 }

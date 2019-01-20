@@ -19,7 +19,7 @@ public class AppActivityTask implements IOwletTask {
 
     @Override
     public void run(AylaDevice device) {
-        if (owletApi.isMonitoringEnabled()) {
+        if (owletApi.isMonitoringEnabled(device)) {
             owletApi.setAppActive(device);
         }
     }

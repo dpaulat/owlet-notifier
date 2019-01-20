@@ -26,18 +26,18 @@ public class OwletApi {
 
     private final OwletApplication owletApplication;
     private final Map<String, Map<String, String>> deviceMap;
+    private final Map<String, Boolean> monitoringEnabled;
     private AylaAuthorizationByEmail authorization;
     private List<AylaDevice> deviceList;
-    private boolean monitoringEnabled;
 
     public OwletApi(@NotNull AylaDeviceApi aylaDeviceApi, @NotNull AylaUsersApi aylaUsersApi) {
         this.aylaDeviceApi = aylaDeviceApi;
         this.aylaUsersApi = aylaUsersApi;
         this.owletApplication = new OwletApplication();
         this.deviceMap = new HashMap<>();
+        this.monitoringEnabled = new HashMap<>();
         this.authorization = null;
         this.deviceList = null;
-        this.monitoringEnabled = false;
     }
 
     @SuppressWarnings("unchecked")
@@ -89,6 +89,11 @@ public class OwletApi {
     public List<AylaDevice> retrieveDevices() {
         if (authorization != null) {
             deviceList = aylaDeviceApi.retrieveDevices(authorization);
+
+            // Device initializes to not monitored
+            for (AylaDevice device : deviceList) {
+                monitoringEnabled.put(device.getDsn(), false);
+            }
         }
 
         return deviceList;
@@ -102,13 +107,7 @@ public class OwletApi {
         }
 
         if (propertyList != null) {
-            Map<String, String> propertyMap;
-            if (deviceMap.containsKey(device.getDsn())) {
-                propertyMap = deviceMap.get(device.getDsn());
-            } else {
-                propertyMap = new HashMap<>();
-                deviceMap.put(device.getDsn(), propertyMap);
-            }
+            Map<String, String> propertyMap = getPropertyMap(device);
 
             for (AylaDevProperty property : propertyList) {
                 propertyMap.put(property.getName(), property.getValue());
@@ -139,13 +138,21 @@ public class OwletApi {
         return authorization != null;
     }
 
-    public boolean isMonitoringEnabled() {
-        return monitoringEnabled;
+    public boolean isMonitoringEnabled(AylaDevice device) {
+        return monitoringEnabled.get(device.getDsn());
     }
 
-    public void setMonitoringEnabled(boolean enabled) {
-        log.info("Monitoring enabled: {}", enabled);
-        this.monitoringEnabled = enabled;
+    public void setMonitoringEnabled(AylaDevice device, boolean enabled) {
+        log.info("Monitoring enabled for {}: {}", device.getDsn(), enabled);
+        monitoringEnabled.put(device.getDsn(), enabled);
+    }
+
+    public void setAllMonitoringEnabled(boolean enabled) {
+        if (deviceList != null) {
+            for (AylaDevice device : deviceList) {
+                setMonitoringEnabled(device, enabled);
+            }
+        }
     }
 
     public boolean isSockReady(AylaDevice device) {
@@ -158,5 +165,16 @@ public class OwletApi {
                 (chargeStatus != null && chargeStatus == 0) &&
                 (movement != null && !movement) &&
                 (sockRecentlyPlaced != null && !sockRecentlyPlaced));
+    }
+
+    private Map<String, String> getPropertyMap(AylaDevice device) {
+        Map<String, String> propertyMap;
+        if (deviceMap.containsKey(device.getDsn())) {
+            propertyMap = deviceMap.get(device.getDsn());
+        } else {
+            propertyMap = new HashMap<>();
+            deviceMap.put(device.getDsn(), propertyMap);
+        }
+        return propertyMap;
     }
 }
