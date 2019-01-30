@@ -21,6 +21,7 @@ public class Application {
     @Bean
     public ServletRegistrationBean alexaServletBean(@NotNull ConfigProperties config,
                                                     @NotNull CancelAndStopIntentHandler cancelAndStopIntentHandler,
+                                                    @NotNull EnableNotificationsIntentHandler enableNotificationsIntentHandler,
                                                     @NotNull HelpIntentHandler helpIntentHandler,
                                                     @NotNull FallbackIntentHandler fallbackIntentHandler,
                                                     @NotNull LaunchRequestHandler launchRequestHandler,
@@ -31,6 +32,7 @@ public class Application {
         ServletRegistrationBean<OwletNotifierSkillServlet> bean = new ServletRegistrationBean<>(
                 new OwletNotifierSkillServlet(config,
                         cancelAndStopIntentHandler,
+                        enableNotificationsIntentHandler,
                         helpIntentHandler,
                         fallbackIntentHandler,
                         launchRequestHandler,

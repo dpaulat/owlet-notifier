@@ -12,6 +12,7 @@ public class OwletNotifierSkillServlet extends SkillServlet {
 
     public OwletNotifierSkillServlet(@NotNull ConfigProperties config,
                                      @NotNull CancelAndStopIntentHandler cancelAndStopIntentHandler,
+                                     @NotNull EnableNotificationsIntentHandler enableNotificationsIntentHandler,
                                      @NotNull HelpIntentHandler helpIntentHandler,
                                      @NotNull FallbackIntentHandler fallbackIntentHandler,
                                      @NotNull LaunchRequestHandler launchRequestHandler,
@@ -21,6 +22,7 @@ public class OwletNotifierSkillServlet extends SkillServlet {
                                      @NotNull StopMonitoringIntentHandler stopMonitoringIntentHandler) {
         super(getSkill(config,
                 cancelAndStopIntentHandler,
+                enableNotificationsIntentHandler,
                 helpIntentHandler,
                 fallbackIntentHandler,
                 launchRequestHandler,
