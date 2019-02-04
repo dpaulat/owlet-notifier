@@ -9,12 +9,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ClientHttpRequest;
 import org.springframework.web.reactive.function.BodyInserter;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class RestApi {
 
@@ -52,8 +54,28 @@ public class RestApi {
         return response;
     }
 
-    protected <T> T post(String uri, Consumer<HttpHeaders> headersConsumer,
-                         BodyInserter<?, ? super ClientHttpRequest> body, Class<T> responseType) {
+    protected <T> T post(String uri,
+                         Consumer<HttpHeaders> headersConsumer,
+                         BodyInserter<?, ? super ClientHttpRequest> body,
+                         Class<T> responseType) {
+        return post(uri,
+                headersConsumer,
+                body,
+                clientResponse -> Mono.error(new WebClientResponseException(
+                        clientResponse.rawStatusCode(),
+                        clientResponse.statusCode().getReasonPhrase(),
+                        clientResponse.headers().asHttpHeaders(),
+                        null, null)),
+                this::handleWebClientResponseException,
+                responseType);
+    }
+
+    protected <T> T post(String uri,
+                         Consumer<HttpHeaders> headersConsumer,
+                         BodyInserter<?, ? super ClientHttpRequest> body,
+                         Function<ClientResponse, Mono<? extends Throwable>> errorFunction,
+                         Consumer<WebClientResponseException> errorExceptionHandler,
+                         Class<T> responseType) {
 
         Mono<T> webResponse = webClient
                 .post()
@@ -63,9 +85,7 @@ public class RestApi {
                 .body(body)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .onStatus(HttpStatus::isError, clientResponse ->
-                        Mono.error(new WebClientResponseException(clientResponse.rawStatusCode(),
-                                clientResponse.statusCode().getReasonPhrase(), null, null, null)))
+                .onStatus(HttpStatus::isError, errorFunction)
                 .bodyToMono(responseType);
 
         T response = null;
@@ -73,7 +93,7 @@ public class RestApi {
         try {
             response = webResponse.block();
         } catch (WebClientResponseException ex) {
-            handleWebClientResponseException(ex);
+            errorExceptionHandler.accept(ex);
         }
 
         return response;
