@@ -33,9 +33,9 @@ public class ConfigProperties {
     @Override
     public String toString() {
         return "ConfigProperties{" +
-                "owlet=" + owlet +
-                "alexa=" + alexa +
-                '}';
+               "owlet=" + owlet +
+               "alexa=" + alexa +
+               '}';
     }
 
     public static class Owlet {
@@ -68,16 +68,34 @@ public class ConfigProperties {
         @Override
         public String toString() {
             return "Owlet{" +
-                    "monitors=" + monitors +
-                    ", email='" + email + '\'' +
-                    ", password='***'" +
-                    '}';
+                   "monitors=" + monitors +
+                   ", email='" + email + '\'' +
+                   ", password='***'" +
+                   '}';
         }
     }
 
     public static class Alexa {
+        private String clientId;
+        private String clientSecret;
         private String skillId;
         private String cardTitle;
+
+        public String getClientId() {
+            return clientId;
+        }
+
+        public void setClientId(String clientId) {
+            this.clientId = clientId;
+        }
+
+        public String getClientSecret() {
+            return clientSecret;
+        }
+
+        public void setClientSecret(String clientSecret) {
+            this.clientSecret = clientSecret;
+        }
 
         public String getSkillId() {
             return skillId;
@@ -98,9 +116,11 @@ public class ConfigProperties {
         @Override
         public String toString() {
             return "Alexa{" +
-                    "skillId='" + skillId + '\'' +
-                    "cardTitle='" + cardTitle + '\'' +
-                    '}';
+                   "clientId='" + clientId + '\'' +
+                   ", clientSecret='***'" +
+                   ", skillId='" + skillId + '\'' +
+                   ", cardTitle='" + cardTitle + '\'' +
+                   '}';
         }
     }
 }

@@ -12,11 +12,9 @@ public class AccessTokenRequest {
     @NotNull
     private String grantType;
 
-    @NotNull
     private String code;
 
     @JsonProperty(value = "redirect_uri")
-    @NotNull
     private String redirectUri;
 
     @JsonProperty(value = "client_id")
@@ -26,6 +24,8 @@ public class AccessTokenRequest {
     @JsonProperty(value = "client_secret")
     @NotNull
     private String clientSecret;
+
+    private String scope;
 
     public AccessTokenRequest() {
     }
@@ -70,6 +70,14 @@ public class AccessTokenRequest {
         this.clientSecret = clientSecret;
     }
 
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
+
     @Override
     public String toString() {
         return "AccessTokenRequest{" +
@@ -78,6 +86,7 @@ public class AccessTokenRequest {
                ", redirectUri='" + redirectUri + '\'' +
                ", clientId='" + clientId + '\'' +
                ", clientSecret='" + clientSecret + '\'' +
+               ", scope='" + scope + '\'' +
                '}';
     }
 }

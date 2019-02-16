@@ -1,6 +1,9 @@
 package net.dpaulat.apps.alexa.api;
 
-import net.dpaulat.apps.alexa.json.*;
+import net.dpaulat.apps.alexa.json.AccessTokenRequest;
+import net.dpaulat.apps.alexa.json.AccessTokenResponse;
+import net.dpaulat.apps.alexa.json.ErrorResponse;
+import net.dpaulat.apps.owletnotifier.ConfigProperties;
 import net.dpaulat.apps.rest.api.RestApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,47 +23,27 @@ public class AlexaApi extends RestApi {
 
     private static final String baseUrl = "";
 
-    protected AlexaApi(@NotNull ApplicationContext context) {
+    private final @NotNull ConfigProperties config;
+
+    private AccessTokenResponse accessTokenResponse = null;
+
+    protected AlexaApi(@NotNull ApplicationContext context, @NotNull ConfigProperties config) {
         super(context, baseUrl);
+
+        this.config = config;
     }
 
-    public void requestAuthorization(String clientId, String scope, String redirectUri, String state) {
+    public AccessTokenResponse requestAccessToken() {
 
-        // https://developer.amazon.com/docs/login-with-amazon/authorization-code-grant.html
-        AuthorizationRequest authorizationRequest = new AuthorizationRequest();
-        authorizationRequest.setClientId(clientId);
-        authorizationRequest.setScope(scope);
-        authorizationRequest.setResponseType("code");
-        authorizationRequest.setRedirectUri(redirectUri);
-        authorizationRequest.setState(state);
-
-        try {
-            AuthorizationResponse authorizationResponse = post("https://www.amazon.com/ap/oa",
-                    httpHeaders -> {
-                    },
-                    BodyInserters.fromObject(authorizationRequest),
-                    this::errorResponse,
-                    this::handleWebClientResponseException,
-                    AuthorizationResponse.class);
-
-            log.warn(authorizationResponse.toString());
-        } catch (WebClientResponseException ex) {
-            log.info(ex.getMessage());
-        }
-    }
-
-    public void requestAccessToken(String code, String redirectUri, String clientId, String clientSecret) {
-
-        // https://developer.amazon.com/docs/login-with-amazon/authorization-code-grant.html
+        // https://developer.amazon.com/docs/smapi/configure-an-application-or-service-to-send-messages-to-your-skill.html#request-format-to-obtain-access-token
         AccessTokenRequest accessTokenRequest = new AccessTokenRequest();
-        accessTokenRequest.setGrantType("Authorization_code");
-        accessTokenRequest.setCode(code);
-        accessTokenRequest.setRedirectUri(redirectUri);
-        accessTokenRequest.setClientId(clientId);
-        accessTokenRequest.setClientSecret(clientSecret);
+        accessTokenRequest.setGrantType("client_credentials");
+        accessTokenRequest.setClientId(config.getAlexa().getClientId());
+        accessTokenRequest.setClientSecret(config.getAlexa().getClientSecret());
+        accessTokenRequest.setScope("alexa:skill_messaging");
 
         try {
-            AccessTokenResponse accessTokenResponse = post("https://api.amazon.com/auth/o2/token",
+            accessTokenResponse = post("https://api.amazon.com/auth/o2/token",
                     httpHeaders -> {
                     },
                     BodyInserters.fromObject(accessTokenRequest),
@@ -68,10 +51,23 @@ public class AlexaApi extends RestApi {
                     this::handleWebClientResponseException,
                     AccessTokenResponse.class);
 
-            log.warn(accessTokenResponse.toString());
+            log.info("Alexa sign in successful, expiration in {} seconds", accessTokenResponse.getExpiresIn());
+            log.debug(accessTokenResponse.toString());
         } catch (WebClientResponseException ex) {
+            accessTokenResponse = null;
+            log.info("Alexa sign in unsuccessful");
             log.info(ex.getMessage());
         }
+
+        return accessTokenResponse;
+    }
+
+    public boolean isAuthenticated() {
+        return accessTokenResponse != null;
+    }
+
+    public AccessTokenResponse getAccessToken() {
+        return this.accessTokenResponse;
     }
 
     private Mono<? extends Throwable> errorResponse(ClientResponse clientResponse) {

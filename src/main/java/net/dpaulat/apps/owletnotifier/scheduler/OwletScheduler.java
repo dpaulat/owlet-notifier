@@ -67,8 +67,7 @@ public class OwletScheduler {
             log.error("Could not sign in, exiting");
             SpringApplication.exit(context, () -> -1);
         }
-
-        refreshTokenTask.scheduleTokenRefresh(auth);
+        refreshTokenTask.scheduleTokenRefresh(auth.getExpiresIn() / 2);
 
         deviceList = owletApi.retrieveDevices();
 
