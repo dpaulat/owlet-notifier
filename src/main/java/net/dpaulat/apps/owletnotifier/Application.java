@@ -1,6 +1,7 @@
 package net.dpaulat.apps.owletnotifier;
 
-import net.dpaulat.apps.owletnotifier.alexa.*;
+import net.dpaulat.apps.owletnotifier.alexa.OwletNotifierSkillServlet;
+import net.dpaulat.apps.owletnotifier.alexa.handler.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;

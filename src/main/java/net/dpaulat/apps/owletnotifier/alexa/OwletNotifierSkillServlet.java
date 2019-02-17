@@ -5,6 +5,7 @@ import com.amazon.ask.Skills;
 import com.amazon.ask.dispatcher.request.handler.RequestHandler;
 import com.amazon.ask.servlet.SkillServlet;
 import net.dpaulat.apps.owletnotifier.ConfigProperties;
+import net.dpaulat.apps.owletnotifier.alexa.handler.*;
 
 import javax.validation.constraints.NotNull;
 

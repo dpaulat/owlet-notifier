@@ -1,4 +1,4 @@
-package net.dpaulat.apps.owletnotifier.alexa;
+package net.dpaulat.apps.owletnotifier.alexa.handler;
 
 import com.amazon.ask.dispatcher.request.handler.HandlerInput;
 import com.amazon.ask.dispatcher.request.handler.RequestHandler;
