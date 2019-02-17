@@ -3,6 +3,8 @@ package net.dpaulat.apps.owletnotifier.alexa;
 import net.dpaulat.apps.alexa.api.AlexaApi;
 import net.dpaulat.apps.alexa.json.AccessTokenResponse;
 import net.dpaulat.apps.owletnotifier.ConfigProperties;
+import net.dpaulat.apps.owletnotifier.alexa.data.ReminderEntity;
+import net.dpaulat.apps.owletnotifier.alexa.data.ReminderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -20,14 +22,16 @@ public class AlexaScheduler {
     private final @NotNull ConfigProperties config;
     private final @NotNull AlexaApi alexaApi;
     private final @NotNull AccessTokenTask accessTokenTask;
+    private final @NotNull ReminderRepository reminderRepository;
     private boolean initialized;
 
     public AlexaScheduler(@NotNull ApplicationContext context, @NotNull ConfigProperties config, @NotNull AlexaApi alexaApi,
-                          @NotNull AccessTokenTask accessTokenTask) {
+                          @NotNull AccessTokenTask accessTokenTask, @NotNull ReminderRepository reminderRepository) {
         this.context = context;
         this.config = config;
         this.alexaApi = alexaApi;
         this.accessTokenTask = accessTokenTask;
+        this.reminderRepository = reminderRepository;
         this.initialized = false;
     }
 
@@ -48,6 +52,11 @@ public class AlexaScheduler {
             log.error("Could not retrieve Alexa skill messaging access token");
         } else {
             accessTokenTask.scheduleTokenRefresh(accessTokenResponse.getExpiresIn() / 2);
+        }
+
+        // TODO: Synchronize reminders
+        for (ReminderEntity reminder : reminderRepository.findAll()) {
+            log.info(reminder.toString());
         }
 
         initialized = true;
