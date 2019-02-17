@@ -3,11 +3,13 @@ package net.dpaulat.apps.alexa.api;
 import net.dpaulat.apps.alexa.json.AccessTokenRequest;
 import net.dpaulat.apps.alexa.json.AccessTokenResponse;
 import net.dpaulat.apps.alexa.json.ErrorResponse;
+import net.dpaulat.apps.alexa.json.SkillMessageRequest;
 import net.dpaulat.apps.owletnotifier.ConfigProperties;
 import net.dpaulat.apps.rest.api.RestApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -68,6 +70,29 @@ public class AlexaApi extends RestApi {
 
     public AccessTokenResponse getAccessToken() {
         return this.accessTokenResponse;
+    }
+
+    public void sendSkillMessage(String userId) {
+        SkillMessageRequest message = new SkillMessageRequest();
+        message.getData().put("Test Key", "Test Value");
+
+        if (!isAuthenticated()) {
+            log.warn("Cannot send skill message, not authenticated");
+            return;
+        }
+
+        try {
+            post("https://api.amazonalexa.com/v1/skillmessages/users/" + userId,
+                    httpHeaders ->
+                            httpHeaders.add(HttpHeaders.AUTHORIZATION,
+                                    "Bearer " + accessTokenResponse.getAccessToken()),
+                    BodyInserters.fromObject(message),
+                    this::errorResponse,
+                    this::handleWebClientResponseException,
+                    Object.class);
+        } catch (WebClientResponseException ex) {
+            log.info(ex.getMessage());
+        }
     }
 
     private Mono<? extends Throwable> errorResponse(ClientResponse clientResponse) {

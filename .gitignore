@@ -9,6 +9,9 @@ owlet-notifier.config
 # User keystore and certificates
 keystore/
 
+# Databases
+*.db
+
 
 ####################
 # Gradle.gitignore #
