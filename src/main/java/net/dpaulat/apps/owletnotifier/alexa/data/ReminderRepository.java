@@ -1,11 +1,21 @@
 package net.dpaulat.apps.owletnotifier.alexa.data;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReminderRepository extends CrudRepository<ReminderEntity, Long> {
-    List<ReminderEntity> findByDeviceId(String deviceId);
 
-    List<ReminderEntity> findByAlertToken(String alertToken);
+    boolean existsByAlertToken(String alertToken);
+
+    List<ReminderEntity> findByUserId(String userId);
+
+    Optional<ReminderEntity> findByDeviceId(String deviceId);
+
+    Optional<ReminderEntity> findByAlertToken(String alertToken);
+
+    @Query("SELECT DISTINCT r.userId FROM ReminderEntity r")
+    List<String> findDistinctUserId();
 }

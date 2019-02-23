@@ -26,9 +26,9 @@ public class Application {
                                                     @NotNull HelpIntentHandler helpIntentHandler,
                                                     @NotNull FallbackIntentHandler fallbackIntentHandler,
                                                     @NotNull LaunchRequestHandler launchRequestHandler,
-                                                    @NotNull MessageReceivedRequestHandler messageReceivedRequestHandler,
                                                     @NotNull ReadVitalsIntentHandler readVitalsIntentHandler,
                                                     @NotNull SessionEndedRequestHandler sessionEndedRequestHandler,
+                                                    @NotNull SynchronizeRemindersHandler synchronizeRemindersHandler,
                                                     @NotNull StartMonitoringIntentHandler startMonitoringIntentHandler,
                                                     @NotNull StopMonitoringIntentHandler stopMonitoringIntentHandler) {
         ServletRegistrationBean<OwletNotifierSkillServlet> bean = new ServletRegistrationBean<>(
@@ -38,9 +38,9 @@ public class Application {
                         helpIntentHandler,
                         fallbackIntentHandler,
                         launchRequestHandler,
-                        messageReceivedRequestHandler,
                         readVitalsIntentHandler,
                         sessionEndedRequestHandler,
+                        synchronizeRemindersHandler,
                         startMonitoringIntentHandler,
                         stopMonitoringIntentHandler),
                 "/alexa");

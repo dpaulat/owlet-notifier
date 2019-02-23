@@ -5,6 +5,7 @@ import net.dpaulat.apps.alexa.json.AccessTokenResponse;
 import net.dpaulat.apps.owletnotifier.ConfigProperties;
 import net.dpaulat.apps.owletnotifier.alexa.data.ReminderEntity;
 import net.dpaulat.apps.owletnotifier.alexa.data.ReminderRepository;
+import net.dpaulat.apps.owletnotifier.alexa.message.SynchronizeReminders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -54,9 +55,13 @@ public class AlexaScheduler {
             accessTokenTask.scheduleTokenRefresh(accessTokenResponse.getExpiresIn() / 2);
         }
 
-        // TODO: Synchronize reminders
         for (ReminderEntity reminder : reminderRepository.findAll()) {
             log.info(reminder.toString());
+        }
+
+        // Synchronize reminders for each distinct user
+        for (String userId : reminderRepository.findDistinctUserId()) {
+            alexaApi.sendSkillMessage(userId, new SynchronizeReminders());
         }
 
         initialized = true;

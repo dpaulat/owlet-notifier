@@ -76,11 +76,9 @@ public class EnableNotificationsIntentHandler implements RequestHandler {
                 .getDevice()
                 .getDeviceId();
 
-        List<ReminderEntity> reminderList = reminderRepository.findByDeviceId(deviceId);
+        Optional<ReminderEntity> storedReminder = reminderRepository.findByDeviceId(deviceId);
         boolean reminderExists = false;
-        if (!reminderList.isEmpty()) {
-            ReminderEntity storedReminder = reminderList.get(0);
-
+        if (storedReminder.isPresent()) {
             GetRemindersResponse getRemindersResponse = handlerInput
                     .getServiceClientFactory()
                     .getReminderManagementService()
@@ -88,14 +86,14 @@ public class EnableNotificationsIntentHandler implements RequestHandler {
 
             // Search current reminder list for stored reminder
             for (Reminder reminder : getRemindersResponse.getAlerts()) {
-                if (reminder.getAlertToken().equals(storedReminder.getAlertToken())) {
+                if (reminder.getAlertToken().equals(storedReminder.get().getAlertToken())) {
                     reminderExists = true;
                 }
             }
 
             // Stored reminder no longer exists, need to create a new one
             if (!reminderExists) {
-                reminderRepository.delete(storedReminder);
+                reminderRepository.delete(storedReminder.get());
             }
         }
 

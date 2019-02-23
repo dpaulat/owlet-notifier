@@ -72,9 +72,10 @@ public class AlexaApi extends RestApi {
         return this.accessTokenResponse;
     }
 
-    public void sendSkillMessage(String userId) {
-        SkillMessageRequest message = new SkillMessageRequest();
-        message.getData().put("Test Key", "Test Value");
+    public void sendSkillMessage(String userId, ISkillMessage message) {
+        SkillMessageRequest messageRequest = new SkillMessageRequest();
+        messageRequest.getData().put("type", message.getClass().getSimpleName());
+        messageRequest.getData().putAll(message.getData());
 
         if (!isAuthenticated()) {
             log.warn("Cannot send skill message, not authenticated");
@@ -86,7 +87,7 @@ public class AlexaApi extends RestApi {
                     httpHeaders ->
                             httpHeaders.add(HttpHeaders.AUTHORIZATION,
                                     "Bearer " + accessTokenResponse.getAccessToken()),
-                    BodyInserters.fromObject(message),
+                    BodyInserters.fromObject(messageRequest),
                     this::errorResponse,
                     this::handleWebClientResponseException,
                     Object.class);
