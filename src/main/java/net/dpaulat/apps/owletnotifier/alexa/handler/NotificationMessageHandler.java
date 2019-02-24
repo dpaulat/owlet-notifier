@@ -4,7 +4,10 @@ import com.amazon.ask.dispatcher.request.handler.HandlerInput;
 import com.amazon.ask.dispatcher.request.handler.impl.MessageReceivedRequestHandler;
 import com.amazon.ask.model.Response;
 import com.amazon.ask.model.interfaces.messaging.MessageReceivedRequest;
+import com.amazon.ask.model.services.reminderManagement.ReminderRequest;
 import net.dpaulat.apps.alexa.api.ISkillMessage;
+import net.dpaulat.apps.owletnotifier.ConfigProperties;
+import net.dpaulat.apps.owletnotifier.alexa.data.ReminderEntity;
 import net.dpaulat.apps.owletnotifier.alexa.data.ReminderRepository;
 import net.dpaulat.apps.owletnotifier.alexa.message.NotificationMessage;
 import org.slf4j.Logger;
@@ -16,13 +19,16 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class NotificationMessageHandler implements MessageReceivedRequestHandler {
+public class NotificationMessageHandler extends OwletNotifierRequestHandler implements MessageReceivedRequestHandler {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationMessageHandler.class);
 
+    private final ConfigProperties config;
     private final ReminderRepository reminderRepository;
 
-    public NotificationMessageHandler(@NotNull ReminderRepository reminderRepository) {
+    public NotificationMessageHandler(@NotNull ConfigProperties config,
+                                      @NotNull ReminderRepository reminderRepository) {
+        this.config = config;
         this.reminderRepository = reminderRepository;
     }
 
@@ -30,7 +36,8 @@ public class NotificationMessageHandler implements MessageReceivedRequestHandler
     public boolean canHandle(HandlerInput input, MessageReceivedRequest messageReceivedRequest) {
         Map<String, Object> message = messageReceivedRequest.getMessage();
         return (message.containsKey(ISkillMessage.TYPE) &&
-                message.get(ISkillMessage.TYPE).equals(NotificationMessage.class.getSimpleName()));
+                message.get(ISkillMessage.TYPE).equals(NotificationMessage.class.getSimpleName()) &&
+                message.containsKey(NotificationMessage.MESSAGE));
     }
 
     @Override
@@ -44,6 +51,20 @@ public class NotificationMessageHandler implements MessageReceivedRequestHandler
 
         log.info("Handling notifications for user {}", userId);
 
+        for (ReminderEntity reminder : reminderRepository.findByUserId(userId)) {
+            sendNotification(input, reminder,
+                    (String) messageReceivedRequest.getMessage().get(NotificationMessage.MESSAGE));
+        }
+
         return input.getResponseBuilder().build();
+    }
+
+    public void sendNotification(HandlerInput input, ReminderEntity reminder, String message) {
+        ReminderRequest notificationRequest = createReminderRequest(message, true);
+
+        // Send message
+        input.getServiceClientFactory()
+                .getReminderManagementService()
+                .updateReminder(reminder.getAlertToken(), notificationRequest);
     }
 }

@@ -74,6 +74,8 @@ public class SynchronizeRemindersHandler implements MessageReceivedRequestHandle
                 input.getServiceClientFactory()
                         .getReminderManagementService()
                         .deleteReminder(remoteReminder.getAlertToken());
+            } else {
+                log.info("Found remote reminder: {}", remoteReminder);
             }
         }
 

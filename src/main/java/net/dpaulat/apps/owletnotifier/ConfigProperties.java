@@ -82,6 +82,7 @@ public class ConfigProperties {
         private String clientSecret;
         private String skillId;
         private String cardTitle;
+        private String placeholderReminder;
 
         public String getClientId() {
             return clientId;
@@ -115,6 +116,14 @@ public class ConfigProperties {
             this.cardTitle = cardTitle;
         }
 
+        public String getPlaceholderReminder() {
+            return placeholderReminder;
+        }
+
+        public void setPlaceholderReminder(String placeholderReminder) {
+            this.placeholderReminder = placeholderReminder;
+        }
+
         @Override
         public String toString() {
             return "Alexa{" +
@@ -122,6 +131,7 @@ public class ConfigProperties {
                    ", clientSecret='***'" +
                    ", skillId='" + skillId + '\'' +
                    ", cardTitle='" + cardTitle + '\'' +
+                   ", placeholderReminder='" + placeholderReminder + '\'' +
                    '}';
         }
     }
