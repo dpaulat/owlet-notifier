@@ -5,10 +5,14 @@ import net.dpaulat.apps.alexa.json.AccessTokenResponse;
 import net.dpaulat.apps.owletnotifier.ConfigProperties;
 import net.dpaulat.apps.owletnotifier.alexa.data.ReminderEntity;
 import net.dpaulat.apps.owletnotifier.alexa.data.ReminderRepository;
+import net.dpaulat.apps.owletnotifier.alexa.message.NotificationMessage;
 import net.dpaulat.apps.owletnotifier.alexa.message.SynchronizeReminders;
+import net.dpaulat.apps.owletnotifier.events.OwletEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -69,6 +73,18 @@ public class AlexaScheduler {
 
     private void runOnce() {
         // TODO
+    }
+
+    @Async
+    @EventListener
+    public void handleOwletEvent(OwletEvent oe) {
+        log.info("Received Owlet Event: {}", oe.getMessage());
+
+        NotificationMessage message = new NotificationMessage(oe.getMessage());
+
+        for (String userId : reminderRepository.findDistinctUserId()) {
+            alexaApi.sendSkillMessage(userId, message);
+        }
     }
 
     private static class Seconds {
