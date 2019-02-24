@@ -64,10 +64,14 @@ public class DisableNotificationsIntentHandler implements RequestHandler {
 
         Optional<ReminderEntity> storedReminder = reminderRepository.findByDeviceId(deviceId);
         if (storedReminder.isPresent()) {
-            // Delete the reminder remotely
-            handlerInput.getServiceClientFactory()
-                    .getReminderManagementService()
-                    .deleteReminder(storedReminder.get().getAlertToken());
+            try {
+                // Delete the reminder remotely
+                handlerInput.getServiceClientFactory()
+                        .getReminderManagementService()
+                        .deleteReminder(storedReminder.get().getAlertToken());
+            } catch (Exception ex) {
+                log.info("Error removing remote reminder (reminder is likely completed), proceeding anyway");
+            }
 
             // Delete the reminder locally
             reminderRepository.delete(storedReminder.get());
