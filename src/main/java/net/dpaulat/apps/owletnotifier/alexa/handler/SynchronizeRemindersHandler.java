@@ -38,15 +38,14 @@ public class SynchronizeRemindersHandler implements MessageReceivedRequestHandle
 
     @Override
     public Optional<Response> handle(HandlerInput input, MessageReceivedRequest messageReceivedRequest) {
-        log.info("Synchronizing reminders");
-        log.info(input.getRequest().getRequestId());
-
         String userId = input
                 .getRequestEnvelope()
                 .getContext()
                 .getSystem()
                 .getUser()
                 .getUserId();
+
+        log.info("Synchronizing reminders for user {}", userId);
 
         GetRemindersResponse getRemindersResponse = input
                 .getServiceClientFactory()
@@ -58,15 +57,23 @@ public class SynchronizeRemindersHandler implements MessageReceivedRequestHandle
             boolean localReminderExists = false;
 
             for (Reminder remoteReminder : getRemindersResponse.getAlerts()) {
-                if (!reminderRepository.existsByAlertToken(remoteReminder.getAlertToken())) {
-                    log.info("Remote reminder {} not found in database, deleting", remoteReminder.getAlertToken());
-                } else if (localReminder.getAlertToken().equals(remoteReminder.getAlertToken())) {
+                if (localReminder.getAlertToken().equals(remoteReminder.getAlertToken())) {
                     localReminderExists = true;
                 }
             }
 
             if (!localReminderExists) {
                 log.info("Local reminder {} not found on servers, deleting", localReminder.getAlertToken());
+                reminderRepository.delete(localReminder);
+            }
+        }
+
+        for (Reminder remoteReminder : getRemindersResponse.getAlerts()) {
+            if (!reminderRepository.existsByAlertToken(remoteReminder.getAlertToken())) {
+                log.info("Remote reminder {} not found in database, deleting", remoteReminder.getAlertToken());
+                input.getServiceClientFactory()
+                        .getReminderManagementService()
+                        .deleteReminder(remoteReminder.getAlertToken());
             }
         }
 
