@@ -53,7 +53,7 @@ public class NotificationMessageHandler extends OwletNotifierRequestHandler impl
 
         for (ReminderEntity reminder : reminderRepository.findByUserId(userId)) {
             sendNotification(input, reminder,
-                    (String) messageReceivedRequest.getMessage().get(NotificationMessage.MESSAGE));
+                    messageReceivedRequest.getMessage().get(NotificationMessage.MESSAGE).toString());
         }
 
         return input.getResponseBuilder().build();

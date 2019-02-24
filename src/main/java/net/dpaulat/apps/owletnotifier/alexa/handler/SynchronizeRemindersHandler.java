@@ -6,7 +6,11 @@ import com.amazon.ask.model.Response;
 import com.amazon.ask.model.interfaces.messaging.MessageReceivedRequest;
 import com.amazon.ask.model.services.reminderManagement.GetRemindersResponse;
 import com.amazon.ask.model.services.reminderManagement.Reminder;
+import com.amazon.ask.model.services.reminderManagement.ReminderRequest;
+import com.amazon.ask.model.services.reminderManagement.Status;
 import net.dpaulat.apps.alexa.api.ISkillMessage;
+import net.dpaulat.apps.owlet.OwletApi;
+import net.dpaulat.apps.owletnotifier.ConfigProperties;
 import net.dpaulat.apps.owletnotifier.alexa.data.ReminderEntity;
 import net.dpaulat.apps.owletnotifier.alexa.data.ReminderRepository;
 import net.dpaulat.apps.owletnotifier.alexa.message.SynchronizeReminders;
@@ -19,13 +23,18 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class SynchronizeRemindersHandler implements MessageReceivedRequestHandler {
+public class SynchronizeRemindersHandler extends OwletNotifierRequestHandler implements MessageReceivedRequestHandler {
 
     private static final Logger log = LoggerFactory.getLogger(SynchronizeRemindersHandler.class);
 
+    private final ConfigProperties config;
+    private final OwletApi owletApi;
     private final ReminderRepository reminderRepository;
 
-    public SynchronizeRemindersHandler(@NotNull ReminderRepository reminderRepository) {
+    public SynchronizeRemindersHandler(@NotNull ConfigProperties config, @NotNull OwletApi owletApi,
+                                       @NotNull ReminderRepository reminderRepository) {
+        this.config = config;
+        this.owletApi = owletApi;
         this.reminderRepository = reminderRepository;
     }
 
@@ -70,12 +79,28 @@ public class SynchronizeRemindersHandler implements MessageReceivedRequestHandle
 
         for (Reminder remoteReminder : getRemindersResponse.getAlerts()) {
             if (!reminderRepository.existsByAlertToken(remoteReminder.getAlertToken())) {
-                log.info("Remote reminder {} not found in database, deleting", remoteReminder.getAlertToken());
-                input.getServiceClientFactory()
-                        .getReminderManagementService()
-                        .deleteReminder(remoteReminder.getAlertToken());
+                // Only delete the remote reminder if it's not yet completed
+                if (remoteReminder.getStatus() != Status.COMPLETED) {
+                    log.info("Remote reminder {} not found in database, deleting", remoteReminder.getAlertToken());
+                    input.getServiceClientFactory()
+                            .getReminderManagementService()
+                            .deleteReminder(remoteReminder.getAlertToken());
+                }
             } else {
-                log.info("Found remote reminder: {}", remoteReminder);
+                log.info("Found remote reminder {}", remoteReminder.getAlertToken());
+                log.debug("{}", remoteReminder);
+
+                // If we aren't monitoring, and the reminder is completed, refresh it
+                if (!owletApi.isAnyMonitoringEnabled() && remoteReminder.getStatus() == Status.COMPLETED) {
+                    log.info("Refreshing remote reminder: {}", remoteReminder.getAlertToken());
+
+                    ReminderRequest reminderRequest = createReminderRequest(
+                            config.getAlexa().getPlaceholderReminder(),
+                            false);
+                    input.getServiceClientFactory()
+                            .getReminderManagementService()
+                            .updateReminder(remoteReminder.getAlertToken(), reminderRequest);
+                }
             }
         }
 

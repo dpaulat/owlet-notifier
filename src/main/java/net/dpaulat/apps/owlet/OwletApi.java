@@ -142,6 +142,17 @@ public class OwletApi {
         return monitoringEnabled.get(device.getDsn());
     }
 
+    public boolean isAnyMonitoringEnabled() {
+        if (deviceList != null) {
+            for (AylaDevice device : deviceList) {
+                if (isMonitoringEnabled(device)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void setMonitoringEnabled(AylaDevice device, boolean enabled) {
         log.info("Monitoring enabled for {}: {}", device.getDsn(), enabled);
         monitoringEnabled.put(device.getDsn(), enabled);
