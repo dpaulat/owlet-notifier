@@ -26,7 +26,7 @@ public class HelpIntentHandler implements RequestHandler {
 
     @Override
     public Optional<Response> handle(HandlerInput handlerInput) {
-        String speechText = "Available commands are \"start monitoring\", \"stop monitoring\", and \"read vitals\".";
+        String speechText = "Available commands are \"enable notifications\", \"disable notifications\", \"start monitoring\", \"stop monitoring\", and \"read vitals\".";
         return handlerInput.getResponseBuilder()
                 .withSpeech(speechText)
                 .withSimpleCard(config.getAlexa().getCardTitle(), speechText)

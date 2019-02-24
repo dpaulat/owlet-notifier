@@ -7,7 +7,6 @@ import com.amazon.ask.model.Response;
 import com.amazon.ask.model.services.ServiceException;
 import com.amazon.ask.model.services.reminderManagement.*;
 import com.amazon.ask.request.Predicates;
-import net.dpaulat.apps.owlet.OwletApi;
 import net.dpaulat.apps.owletnotifier.ConfigProperties;
 import net.dpaulat.apps.owletnotifier.alexa.data.ReminderEntity;
 import net.dpaulat.apps.owletnotifier.alexa.data.ReminderRepository;
@@ -28,13 +27,11 @@ public class EnableNotificationsIntentHandler implements RequestHandler {
     private static final Logger log = LoggerFactory.getLogger(EnableNotificationsIntentHandler.class);
 
     private final @NotNull ConfigProperties config;
-    private final @NotNull OwletApi owletApi;
     private final @NotNull ReminderRepository reminderRepository;
 
-    public EnableNotificationsIntentHandler(@NotNull ConfigProperties config, @NotNull OwletApi owletApi,
+    public EnableNotificationsIntentHandler(@NotNull ConfigProperties config,
                                             @NotNull ReminderRepository reminderRepository) {
         this.config = config;
-        this.owletApi = owletApi;
         this.reminderRepository = reminderRepository;
     }
 
@@ -75,6 +72,8 @@ public class EnableNotificationsIntentHandler implements RequestHandler {
                 .getSystem()
                 .getDevice()
                 .getDeviceId();
+
+        log.info("Enabling notifications for {}", deviceId);
 
         Optional<ReminderEntity> storedReminder = reminderRepository.findByDeviceId(deviceId);
         boolean reminderExists = false;
@@ -120,11 +119,10 @@ public class EnableNotificationsIntentHandler implements RequestHandler {
     }
 
     private ReminderResponse createReminder(HandlerInput handlerInput) {
-
         ReminderResponse reminderResponse = null;
 
         SpokenText spokenText = SpokenText.builder()
-                .withText("This is a placeholder reminder.")
+                .withText("This is an Owlet Notifier placeholder reminder.")
                 .build();
 
         AlertInfoSpokenInfo alertInfoSpokenInfo = AlertInfoSpokenInfo.builder()
@@ -161,9 +159,5 @@ public class EnableNotificationsIntentHandler implements RequestHandler {
         }
 
         return reminderResponse;
-    }
-
-    private GetRemindersResponse getReminders(HandlerInput handlerInput) {
-        return handlerInput.getServiceClientFactory().getReminderManagementService().getReminders();
     }
 }
