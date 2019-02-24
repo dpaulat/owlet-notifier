@@ -72,7 +72,10 @@ public class AlexaScheduler {
     }
 
     private void runOnce() {
-        // TODO
+        // Synchronize reminders for each distinct user
+        for (String userId : reminderRepository.findDistinctUserId()) {
+            alexaApi.sendSkillMessage(userId, new SynchronizeReminders());
+        }
     }
 
     @Async
