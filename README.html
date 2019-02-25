@@ -1055,32 +1055,65 @@ body .markdown-body
 .codehilite .vi{color:teal}
 .codehilite .il{color:#009999}
 .codehilite .gc{color:#999;background-color:#EAF2F5}
-</style><title>alexa-skill</title></head><body><article class="markdown-body"><h1 id="application-setup">Application Setup<a class="headerlink" href="#application-setup" title="Permanent link"></a></h1>
+</style><title>README</title></head><body><article class="markdown-body"><h1 id="application-setup">Application Setup<a class="headerlink" href="#application-setup" title="Permanent link"></a></h1>
 <ol>
+<li>Add your Owlet credentials to owlet-notifier.config.</li>
+<li>Configure monitoring conditions in owlet-notifier.config, using the samples as guidance.</li>
+<li>Configure SSL to work with Alexa using ONE of the following methods.  You will need a domain or subdomain for Alexa to communicate with.  Note Alexa will only work over port 443.<ol>
+<li>Configure an Apache proxy.  The application.properties file is setup for this method already.</li>
+<li>Configure Tomcat to use SSL.  The application.properties file will need modified for this method.<ol>
 <li>Follow the instructions <a href="https://www.baeldung.com/spring-boot-https-self-signed-certificate">here</a> to generate a PKCS12 keystore.</li>
 <li>You will also need to export your key in X.509 format:<ul>
 <li>keytool -exportcert -keystore <keystore.p12> -storetype PKCS12 -alias <alias> -rfc -file <filename.crt></li>
 </ul>
 </li>
 </ol>
+</li>
+</ol>
+</li>
+</ol>
 <h1 id="alexa-skill-setup">Alexa Skill Setup<a class="headerlink" href="#alexa-skill-setup" title="Permanent link"></a></h1>
-<p>In order to integrate with Alexa, you&rsquo;ll want to create an Alexa Skill using the <a href="https://developer.amazon.com/alexa/console/ask">Alexa Skills Kit Developer Console</a>.  Use the Custom skill model for your new skill.</p>
+<p>In order to integrate with Alexa, you&rsquo;ll want to create an Alexa Skill using the <a href="https://developer.amazon.com/alexa/console/ask">Alexa Skills Kit Developer Console</a>.  Use the Custom skill model for your new skill.  Add the Skill ID to owlet-notifier.config.</p>
 <p>Follow the Skill builder checklist to continue.</p>
 <ol>
 <li>Select an Invocation Name.  This example will use &ldquo;owlet notifier&rdquo;.</li>
 <li>Configure Intents, Samples, and Slots.<ul>
-<li>Create the following custom intent:<ul>
-<li>Name: add_reminders</li>
-<li>Sample Utterance: &ldquo;add reminders&rdquo;</li>
+<li>Create the following custom intents:<ul>
+<li>Name: ReadVitals<ul>
+<li>Sample Utterance: &ldquo;read vitals&rdquo;</li>
 </ul>
 </li>
+<li>Name: StartMonitoring<ul>
+<li>Sample Utterance: &ldquo;enable monitoring&rdquo;</li>
+<li>Sample Utterance: &ldquo;start monitoring&rdquo;</li>
+</ul>
+</li>
+<li>Name: StopMonitoring<ul>
+<li>Sample Utterance: &ldquo;disable monitoring&rdquo;</li>
+<li>Sample Utterance: &ldquo;stop monitoring&rdquo;</li>
+</ul>
+</li>
+<li>Name: EnableNotifications<ul>
+<li>Sample Utterance: &ldquo;enable notifications&rdquo;</li>
+</ul>
+</li>
+<li>Name: DisableNotifications<ul>
+<li>Sample Utterance: &ldquo;disable notifications&rdquo;</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Configure permissions, and enable Reminders.<ul>
+<li>Use the Alexa Skill Messaging Client Id and Client Secret in owlet-notifier.config.</li>
 </ul>
 </li>
 <li>Save and Build the Model.</li>
 <li>Add an Endpoint.  Since Alexa will interact with the Spring application running on our machine, we will select HTTPS.<ul>
-<li>Configure a default region URI.  You can either use a fixed IP address, or define a hostname to use, followed by an optional port, then &ldquo;/alexa&rdquo;.  Example:  <a href="https://example.com:8443/alexa">https://example.com:8443/alexa</a></li>
-<li>Select &ldquo;I will upload a self-signed certificate in X 509 format&rdquo;.<ul>
-<li>Note that we can&rsquo;t publish a skill with a self-signed certificate.  This is OK, since we don&rsquo;t intend to publish our skill.</li>
+<li>Configure a default region URI.  You can either use a fixed IP address, or define a hostname to use, then &ldquo;/alexa&rdquo;.  Example:  <a href="https://example.com/alexa">https://example.com/alexa</a></li>
+<li>Select &ldquo;I will upload a self-signed certificate in X 509 format&rdquo;, unless you have generated one from an SSL provider.<ul>
+<li>Note that we can&rsquo;t publish a skill with a self-signed certificate.  This is OK, since we don&rsquo;t intend to publish our skill.  In fact, it is currently designed to work with a single Owlet account.</li>
 </ul>
 </li>
 </ul>
