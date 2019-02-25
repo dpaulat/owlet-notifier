@@ -2,7 +2,6 @@ package net.dpaulat.apps.owletnotifier.alexa;
 
 import net.dpaulat.apps.alexa.api.AlexaApi;
 import net.dpaulat.apps.alexa.json.AccessTokenResponse;
-import net.dpaulat.apps.owletnotifier.ConfigProperties;
 import net.dpaulat.apps.owletnotifier.alexa.data.ReminderEntity;
 import net.dpaulat.apps.owletnotifier.alexa.data.ReminderRepository;
 import net.dpaulat.apps.owletnotifier.alexa.message.NotificationMessage;
@@ -10,7 +9,6 @@ import net.dpaulat.apps.owletnotifier.alexa.message.SynchronizeReminders;
 import net.dpaulat.apps.owletnotifier.events.OwletEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,17 +21,14 @@ public class AlexaScheduler {
 
     private static final Logger log = LoggerFactory.getLogger(AlexaScheduler.class);
 
-    private final @NotNull ApplicationContext context;
-    private final @NotNull ConfigProperties config;
     private final @NotNull AlexaApi alexaApi;
     private final @NotNull AccessTokenTask accessTokenTask;
     private final @NotNull ReminderRepository reminderRepository;
     private boolean initialized;
 
-    public AlexaScheduler(@NotNull ApplicationContext context, @NotNull ConfigProperties config, @NotNull AlexaApi alexaApi,
-                          @NotNull AccessTokenTask accessTokenTask, @NotNull ReminderRepository reminderRepository) {
-        this.context = context;
-        this.config = config;
+    public AlexaScheduler(@NotNull AlexaApi alexaApi,
+                          @NotNull AccessTokenTask accessTokenTask,
+                          @NotNull ReminderRepository reminderRepository) {
         this.alexaApi = alexaApi;
         this.accessTokenTask = accessTokenTask;
         this.reminderRepository = reminderRepository;

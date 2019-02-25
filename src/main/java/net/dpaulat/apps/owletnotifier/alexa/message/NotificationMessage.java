@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class NotificationMessage implements ISkillMessage {
 
-    public static String MESSAGE = "message";
+    public static final String MESSAGE = "message";
 
     private final Map<String, String> data;
 

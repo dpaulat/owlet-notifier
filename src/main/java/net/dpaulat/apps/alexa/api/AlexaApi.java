@@ -68,10 +68,6 @@ public class AlexaApi extends RestApi {
         return accessTokenResponse != null;
     }
 
-    public AccessTokenResponse getAccessToken() {
-        return this.accessTokenResponse;
-    }
-
     public void sendSkillMessage(String userId, ISkillMessage message) {
         SkillMessageRequest messageRequest = new SkillMessageRequest();
         messageRequest.getData().put("type", message.getClass().getSimpleName());

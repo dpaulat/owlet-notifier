@@ -14,8 +14,6 @@ public interface ReminderRepository extends CrudRepository<ReminderEntity, Long>
 
     Optional<ReminderEntity> findByDeviceId(String deviceId);
 
-    Optional<ReminderEntity> findByAlertToken(String alertToken);
-
     @Query("SELECT DISTINCT r.userId FROM ReminderEntity r")
     List<String> findDistinctUserId();
 }

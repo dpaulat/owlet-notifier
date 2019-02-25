@@ -6,7 +6,6 @@ import com.amazon.ask.model.Response;
 import com.amazon.ask.model.interfaces.messaging.MessageReceivedRequest;
 import com.amazon.ask.model.services.reminderManagement.ReminderRequest;
 import net.dpaulat.apps.alexa.api.ISkillMessage;
-import net.dpaulat.apps.owletnotifier.ConfigProperties;
 import net.dpaulat.apps.owletnotifier.alexa.data.ReminderEntity;
 import net.dpaulat.apps.owletnotifier.alexa.data.ReminderRepository;
 import net.dpaulat.apps.owletnotifier.alexa.message.NotificationMessage;
@@ -23,12 +22,9 @@ public class NotificationMessageHandler extends OwletNotifierRequestHandler impl
 
     private static final Logger log = LoggerFactory.getLogger(NotificationMessageHandler.class);
 
-    private final ConfigProperties config;
     private final ReminderRepository reminderRepository;
 
-    public NotificationMessageHandler(@NotNull ConfigProperties config,
-                                      @NotNull ReminderRepository reminderRepository) {
-        this.config = config;
+    public NotificationMessageHandler(@NotNull ReminderRepository reminderRepository) {
         this.reminderRepository = reminderRepository;
     }
 
@@ -65,7 +61,7 @@ public class NotificationMessageHandler extends OwletNotifierRequestHandler impl
         return input.getResponseBuilder().build();
     }
 
-    public void sendNotification(HandlerInput input, ReminderEntity reminder, String message, boolean pushNotificationEnabled) {
+    private void sendNotification(HandlerInput input, ReminderEntity reminder, String message, boolean pushNotificationEnabled) {
         ReminderRequest notificationRequest = createReminderRequest(
                 message,
                 true,

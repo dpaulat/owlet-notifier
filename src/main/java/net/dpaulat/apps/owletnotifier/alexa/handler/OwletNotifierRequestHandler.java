@@ -7,7 +7,7 @@ import java.time.OffsetDateTime;
 
 abstract class OwletNotifierRequestHandler {
 
-    protected ReminderRequest createReminderRequest(String message, boolean remindNow, boolean pushNotificationEnabled) {
+    ReminderRequest createReminderRequest(String message, boolean remindNow, boolean pushNotificationEnabled) {
         SpokenText spokenText = SpokenText.builder()
                 .withText(message)
                 .build();
@@ -28,7 +28,7 @@ abstract class OwletNotifierRequestHandler {
                     .build();
         } else {
             // Place the reminder absurdly in the future
-            LocalDateTime triggerTime = LocalDateTime.of(2199, 01, 01, 00, 00, 00);
+            LocalDateTime triggerTime = LocalDateTime.of(2199, 1, 1, 0, 0, 0);
 
             trigger = Trigger.builder()
                     .withType(TriggerType.SCHEDULED_ABSOLUTE)
@@ -40,13 +40,11 @@ abstract class OwletNotifierRequestHandler {
                 .withStatus(pushNotificationEnabled ? PushNotificationStatus.ENABLED : PushNotificationStatus.DISABLED)
                 .build();
 
-        ReminderRequest reminderRequest = ReminderRequest.builder()
+        return ReminderRequest.builder()
                 .withAlertInfo(alertInfo)
                 .withRequestTime(OffsetDateTime.now())
                 .withTrigger(trigger)
                 .withPushNotification(pushNotification)
                 .build();
-
-        return reminderRequest;
     }
 }
