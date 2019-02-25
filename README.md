@@ -1,4 +1,12 @@
-# Application Setup
+# Owlet Notifier
+
+The Owlet Notifier application allows you to set custom alerts, and integrate with an Alexa-powered smart home.
+
+## Notice
+
+This code is in no way affiliated with, authorized, maintained, sponsored or endorsed by Owlet Baby Care or any of its affiliates or subsidiaries. This is an independent and unofficial API. **Use at your own risk.**
+
+## Application Setup
 
 1. Add your Owlet credentials to owlet-notifier.config.
 2. Configure monitoring conditions in owlet-notifier.config, using the samples as guidance.
@@ -9,7 +17,7 @@
 		2. You will also need to export your key in X.509 format:
 			- keytool -exportcert -keystore <keystore.p12> -storetype PKCS12 -alias <alias> -rfc -file <filename.crt>
 
-# Alexa Skill Setup
+## Alexa Skill Setup
 
 In order to integrate with Alexa, you'll want to create an Alexa Skill using the [Alexa Skills Kit Developer Console](https://developer.amazon.com/alexa/console/ask).  Use the Custom skill model for your new skill.  Add the Skill ID to owlet-notifier.config.
 
@@ -38,3 +46,13 @@ Follow the Skill builder checklist to continue.
     - Select "I will upload a self-signed certificate in X 509 format", unless you have generated one from an SSL provider.
         + Note that we can't publish a skill with a self-signed certificate.  This is OK, since we don't intend to publish our skill.  In fact, it is currently designed to work with a single Owlet account.
 
+## Credits
+
+Thanks to Owlet Baby Care for a great device!
+
+Thanks to the following people for their work on integrating with the Owlet device:
+
+- @puco
+- @bobcat0070
+- @arosequist
+- @mitch-b
