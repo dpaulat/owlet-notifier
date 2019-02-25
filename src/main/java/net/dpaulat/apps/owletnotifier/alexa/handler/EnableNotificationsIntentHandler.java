@@ -124,10 +124,14 @@ public class EnableNotificationsIntentHandler extends OwletNotifierRequestHandle
 
         ReminderRequest reminderRequest = createReminderRequest(
                 config.getAlexa().getPlaceholderReminder(),
+                false,
                 false);
 
         try {
-            reminderResponse = handlerInput.getServiceClientFactory().getReminderManagementService().createReminder(reminderRequest);
+            reminderResponse = handlerInput
+                    .getServiceClientFactory()
+                    .getReminderManagementService()
+                    .createReminder(reminderRequest);
         } catch (ServiceException ex) {
             log.info(ex.toString());
         }

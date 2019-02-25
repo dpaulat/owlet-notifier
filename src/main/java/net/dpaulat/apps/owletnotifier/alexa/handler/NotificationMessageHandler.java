@@ -42,6 +42,7 @@ public class NotificationMessageHandler extends OwletNotifierRequestHandler impl
 
     @Override
     public Optional<Response> handle(HandlerInput input, MessageReceivedRequest messageReceivedRequest) {
+        boolean pushNotificationEnabled = true;
         String userId = input
                 .getRequestEnvelope()
                 .getContext()
@@ -52,15 +53,23 @@ public class NotificationMessageHandler extends OwletNotifierRequestHandler impl
         log.info("Handling notifications for user {}", userId);
 
         for (ReminderEntity reminder : reminderRepository.findByUserId(userId)) {
-            sendNotification(input, reminder,
-                    messageReceivedRequest.getMessage().get(NotificationMessage.MESSAGE).toString());
+            log.info("Sending notification to device {}", reminder.getDeviceId());
+            sendNotification(
+                    input,
+                    reminder,
+                    messageReceivedRequest.getMessage().get(NotificationMessage.MESSAGE).toString(),
+                    pushNotificationEnabled);
+            pushNotificationEnabled = false;
         }
 
         return input.getResponseBuilder().build();
     }
 
-    public void sendNotification(HandlerInput input, ReminderEntity reminder, String message) {
-        ReminderRequest notificationRequest = createReminderRequest(message, true);
+    public void sendNotification(HandlerInput input, ReminderEntity reminder, String message, boolean pushNotificationEnabled) {
+        ReminderRequest notificationRequest = createReminderRequest(
+                message,
+                true,
+                pushNotificationEnabled);
 
         // Send message
         input.getServiceClientFactory()

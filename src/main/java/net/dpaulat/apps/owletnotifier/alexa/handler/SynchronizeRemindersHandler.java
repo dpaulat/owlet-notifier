@@ -96,6 +96,7 @@ public class SynchronizeRemindersHandler extends OwletNotifierRequestHandler imp
 
                     ReminderRequest reminderRequest = createReminderRequest(
                             config.getAlexa().getPlaceholderReminder(),
+                            false,
                             false);
                     input.getServiceClientFactory()
                             .getReminderManagementService()

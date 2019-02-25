@@ -7,7 +7,7 @@ import java.time.OffsetDateTime;
 
 abstract class OwletNotifierRequestHandler {
 
-    protected ReminderRequest createReminderRequest(String message, boolean remindNow) {
+    protected ReminderRequest createReminderRequest(String message, boolean remindNow, boolean pushNotificationEnabled) {
         SpokenText spokenText = SpokenText.builder()
                 .withText(message)
                 .build();
@@ -37,7 +37,7 @@ abstract class OwletNotifierRequestHandler {
         }
 
         PushNotification pushNotification = PushNotification.builder()
-                .withStatus(PushNotificationStatus.ENABLED)
+                .withStatus(pushNotificationEnabled ? PushNotificationStatus.ENABLED : PushNotificationStatus.DISABLED)
                 .build();
 
         ReminderRequest reminderRequest = ReminderRequest.builder()
