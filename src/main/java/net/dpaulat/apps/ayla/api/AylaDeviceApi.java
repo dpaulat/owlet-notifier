@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Dan Paulat
+ * Copyright 2019-2021 Dan Paulat
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,7 +94,7 @@ public class AylaDeviceApi extends RestApi {
         String uri = String.format(createDatapointUri, device.getDsn(), property.name());
         AylaAddDataPointOutput addDataPointOutput = post(uri, httpHeaders ->
                         httpHeaders.add(HttpHeaders.AUTHORIZATION, "authToken " + auth.getAccessToken()),
-                BodyInserters.fromObject(addDataPointInput), AylaAddDataPointOutput.class);
+                BodyInserters.fromValue(addDataPointInput), AylaAddDataPointOutput.class);
 
         log.debug(addDataPointOutput.toString());
 

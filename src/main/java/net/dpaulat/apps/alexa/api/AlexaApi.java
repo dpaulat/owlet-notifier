@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Dan Paulat
+ * Copyright 2019-2021 Dan Paulat
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ public class AlexaApi extends RestApi {
             accessTokenResponse = post("https://api.amazon.com/auth/o2/token",
                     httpHeaders -> {
                     },
-                    BodyInserters.fromObject(accessTokenRequest),
+                    BodyInserters.fromValue(accessTokenRequest),
                     this::errorResponse,
                     this::handleWebClientResponseException,
                     AccessTokenResponse.class);
@@ -99,7 +99,7 @@ public class AlexaApi extends RestApi {
                     httpHeaders ->
                             httpHeaders.add(HttpHeaders.AUTHORIZATION,
                                     "Bearer " + accessTokenResponse.getAccessToken()),
-                    BodyInserters.fromObject(messageRequest),
+                    BodyInserters.fromValue(messageRequest),
                     this::errorResponse,
                     this::handleWebClientResponseException,
                     Object.class);

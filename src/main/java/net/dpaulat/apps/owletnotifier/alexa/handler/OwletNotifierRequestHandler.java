@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Dan Paulat
+ * Copyright 2019-2021 Dan Paulat
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,12 @@ abstract class OwletNotifierRequestHandler {
                 .withText(message)
                 .build();
 
-        AlertInfoSpokenInfo alertInfoSpokenInfo = AlertInfoSpokenInfo.builder()
+        SpokenInfo spokenInfo = SpokenInfo.builder()
                 .addContentItem(spokenText)
                 .build();
 
         AlertInfo alertInfo = AlertInfo.builder()
-                .withSpokenInfo(alertInfoSpokenInfo)
+                .withSpokenInfo(spokenInfo)
                 .build();
 
         Trigger trigger;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Dan Paulat
+ * Copyright 2019-2021 Dan Paulat
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ public class AylaUsersApi extends RestApi {
         log.debug(signInRequest.toString());
 
         signInResponse = post(signInUri, httpHeaders -> {
-        }, BodyInserters.fromObject(signInRequest), AylaAuthorizationByEmail.class);
+        }, BodyInserters.fromValue(signInRequest), AylaAuthorizationByEmail.class);
 
         if (signInResponse != null) {
             log.info("Sign in successful, expiration in {} seconds", signInResponse.getExpiresIn());
@@ -74,7 +74,7 @@ public class AylaUsersApi extends RestApi {
         log.info("Refreshing access token");
 
         signInResponse = post(refreshTokenUri, httpHeaders -> {
-        }, BodyInserters.fromObject(refreshTokenRequest), AylaAuthorizationByEmail.class);
+        }, BodyInserters.fromValue(refreshTokenRequest), AylaAuthorizationByEmail.class);
 
         if (signInResponse != null) {
             log.info("Refresh successful, expiration in {} seconds", signInResponse.getExpiresIn());
