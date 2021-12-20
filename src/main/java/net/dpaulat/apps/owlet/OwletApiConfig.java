@@ -24,7 +24,7 @@ import net.dpaulat.apps.owlet.json.OwletApplicationV2Europe;
 public class OwletApiConfig {
     private final String urlMini;
     private final String urlUser;
-    private final String urlField;
+    private final String urlAds;
     private final String apiKey;
     private final AylaApplication application;
 
@@ -46,11 +46,11 @@ public class OwletApiConfig {
                                "AIzaSyDm6EhV70wudwN3iOSq3vTjtsdGjdFLuuM",
                                new OwletApplicationV2Europe());
 
-    private OwletApiConfig(String urlMini, String urlUser, String urlField, String apiKey,
+    private OwletApiConfig(String urlMini, String urlUser, String urlAds, String apiKey,
                            AylaApplication application) {
         this.urlMini = urlMini;
         this.urlUser = urlUser;
-        this.urlField = urlField;
+        this.urlAds = urlAds;
         this.apiKey = apiKey;
         this.application = application;
     }
@@ -76,8 +76,8 @@ public class OwletApiConfig {
         return urlUser;
     }
 
-    public String getUrlField() {
-        return urlField;
+    public String getUrlAds() {
+        return urlAds;
     }
 
     public String getApiKey() {

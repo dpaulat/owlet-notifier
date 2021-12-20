@@ -17,7 +17,9 @@
 package net.dpaulat.apps.ayla.api;
 
 import net.dpaulat.apps.ayla.json.*;
+import net.dpaulat.apps.owlet.OwletApiConfig;
 import net.dpaulat.apps.owlet.OwletProperties;
+import net.dpaulat.apps.owletnotifier.ConfigProperties;
 import net.dpaulat.apps.rest.api.RestApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +42,12 @@ public class AylaDeviceApi extends RestApi {
 
     private static final Logger log = LoggerFactory.getLogger(AylaDeviceApi.class);
 
-    private static final String baseUrl = "https://user-field.aylanetworks.com/apiv1";
-    private static final String retrieveDevicesUri = "/devices";
-    private static final String retrieveDevicePropertiesUri = "/dsns/%s/properties";
-    private static final String createDatapointUri = "/dsns/%s/properties/%s/datapoints";
+    private static final String retrieveDevicesUri = "/apiv1/devices";
+    private static final String retrieveDevicePropertiesUri = "/apiv1/dsns/%s/properties";
+    private static final String createDatapointUri = "/apiv1/dsns/%s/properties/%s/datapoints";
 
-    public AylaDeviceApi(@NotNull ApplicationContext context) {
-        super(context, baseUrl);
+    public AylaDeviceApi(@NotNull ApplicationContext context, @NotNull ConfigProperties configProperties) {
+        super(context, OwletApiConfig.getConfig(configProperties.getOwlet().getRegion()).getUrlAds());
     }
 
     public List<AylaDevice> retrieveDevices(AylaAuthorizationByEmail auth) {

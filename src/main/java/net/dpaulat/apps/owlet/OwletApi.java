@@ -171,13 +171,18 @@ public class OwletApi {
     public <T> T getPropertyValue(AylaDevice device, OwletProperties propertyName, Class<T> type) {
         T value = null;
         Map<String, String> propertyMap = null;
+        String property = null;
 
         if (deviceMap.containsKey(device.getDsn())) {
             propertyMap = deviceMap.get(device.getDsn());
         }
 
         if (propertyMap != null) {
-            value = parse(propertyMap.get(propertyName.name()), type);
+            property = propertyMap.get(propertyName.name());
+        }
+
+        if (property != null) {
+            value = parse(property, type);
         }
 
         return value;
