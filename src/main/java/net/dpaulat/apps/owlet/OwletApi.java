@@ -18,10 +18,17 @@ package net.dpaulat.apps.owlet;
 
 import net.dpaulat.apps.ayla.api.AylaDeviceApi;
 import net.dpaulat.apps.ayla.api.AylaUsersApi;
+import net.dpaulat.apps.ayla.json.AylaApplication;
 import net.dpaulat.apps.ayla.json.AylaAuthorizationByEmail;
 import net.dpaulat.apps.ayla.json.AylaDevProperty;
 import net.dpaulat.apps.ayla.json.AylaDevice;
+import net.dpaulat.apps.firebase.api.FirebaseAuthenticationApi;
+import net.dpaulat.apps.firebase.json.VerifyPasswordResponse;
+import net.dpaulat.apps.owlet.api.OwletSsoApi;
 import net.dpaulat.apps.owlet.json.OwletApplication;
+import net.dpaulat.apps.owlet.json.OwletApplicationV2;
+import net.dpaulat.apps.owlet.json.OwletApplicationV2Europe;
+import net.dpaulat.apps.owletnotifier.ConfigProperties;
 import net.dpaulat.apps.util.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,19 +44,32 @@ public class OwletApi {
 
     private static final Logger log = LoggerFactory.getLogger(OwletApi.class);
 
+    private static final String androidPackage = "com.owletcare.owletcare";
+    private static final String androidCert = "2A3BC26DB0B8B0792DBE28E6FFDC2598F9B12B74";
+
     private final AylaDeviceApi aylaDeviceApi;
     private final AylaUsersApi aylaUsersApi;
+    private final FirebaseAuthenticationApi firebaseAuthenticationApi;
+    private final OwletSsoApi owletSsoApi;
 
-    private final OwletApplication owletApplication;
+    private final OwletRegion owletRegion;
+    private final OwletApiConfig owletApiConfig;
     private final Map<String, Map<String, String>> deviceMap;
     private final Map<String, Boolean> monitoringEnabled;
     private AylaAuthorizationByEmail authorization;
     private List<AylaDevice> deviceList;
 
-    public OwletApi(@NotNull AylaDeviceApi aylaDeviceApi, @NotNull AylaUsersApi aylaUsersApi) {
+    public OwletApi(@NotNull AylaDeviceApi aylaDeviceApi,
+                    @NotNull AylaUsersApi aylaUsersApi,
+                    @NotNull FirebaseAuthenticationApi firebaseAuthenticationApi,
+                    @NotNull OwletSsoApi owletSsoApi,
+                    @NotNull ConfigProperties configProperties) {
         this.aylaDeviceApi = aylaDeviceApi;
         this.aylaUsersApi = aylaUsersApi;
-        this.owletApplication = new OwletApplication();
+        this.firebaseAuthenticationApi = firebaseAuthenticationApi;
+        this.owletSsoApi = owletSsoApi;
+        this.owletRegion = configProperties.getOwlet().getRegion();
+        this.owletApiConfig = OwletApiConfig.getConfig(owletRegion);
         this.deviceMap = new HashMap<>();
         this.monitoringEnabled = new HashMap<>();
         this.authorization = null;
@@ -86,7 +106,24 @@ public class OwletApi {
     }
 
     public AylaAuthorizationByEmail signIn(String email, String password) {
-        authorization = aylaUsersApi.signIn(email, password, owletApplication);
+        if (owletRegion == OwletRegion.Legacy) {
+            authorization = aylaUsersApi.signIn(email, password, owletApiConfig.getApplication());
+        } else {
+            VerifyPasswordResponse firebaseResponse =
+                    firebaseAuthenticationApi.getAuth(owletApiConfig.getApiKey(), email, password, androidPackage,
+                                                      androidCert);
+            String miniToken = null;
+
+            if (firebaseResponse != null) {
+                String jwt = firebaseResponse.getIdToken();
+                miniToken = owletSsoApi.authenticate(jwt);
+            }
+
+            if (miniToken != null) {
+                authorization = aylaUsersApi.signIn(miniToken, owletApiConfig.getApplication());
+            }
+        }
+
         return authorization;
     }
 

@@ -16,6 +16,7 @@
 
 package net.dpaulat.apps.owletnotifier;
 
+import net.dpaulat.apps.owlet.OwletRegion;
 import net.dpaulat.apps.owletnotifier.monitor.Monitor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -62,6 +63,7 @@ public class ConfigProperties {
         private String email;
         @NotBlank
         private String password;
+        private OwletRegion region = OwletRegion.World;
 
         public List<Monitor> getMonitors() {
             return monitors;
@@ -83,12 +85,21 @@ public class ConfigProperties {
             this.password = password;
         }
 
+        public OwletRegion getRegion() {
+            return region;
+        }
+
+        public void setRegion(OwletRegion region) {
+            this.region = region;
+        }
+
         @Override
         public String toString() {
             return "Owlet{" +
                    "monitors=" + monitors +
                    ", email='" + email + '\'' +
                    ", password='***'" +
+                   ", region=" + region +
                    '}';
         }
     }

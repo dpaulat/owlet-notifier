@@ -16,10 +16,9 @@
 
 package net.dpaulat.apps.ayla.api;
 
-import net.dpaulat.apps.ayla.json.AylaApplication;
-import net.dpaulat.apps.ayla.json.AylaAuthorizationByEmail;
-import net.dpaulat.apps.ayla.json.AylaUserLoginInput;
-import net.dpaulat.apps.ayla.json.AylaUserRefresh;
+import net.dpaulat.apps.ayla.json.*;
+import net.dpaulat.apps.owlet.OwletApiConfig;
+import net.dpaulat.apps.owletnotifier.ConfigProperties;
 import net.dpaulat.apps.rest.api.RestApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,12 +38,13 @@ public class AylaUsersApi extends RestApi {
 
     private static final Logger log = LoggerFactory.getLogger(AylaUsersApi.class);
 
-    private static final String baseUrl = "https://user-field.aylanetworks.com/users";
-    private static final String signInUri = "/sign_in";
-    private static final String refreshTokenUri = "/refresh_token";
+    private static final String signInUri = "/users/sign_in";
+    private static final String tokenSignInUri = "/api/v1/token_sign_in";
+    private static final String refreshTokenUri = "/users/refresh_token";
+    private static final String provider = "owl_id";
 
-    public AylaUsersApi(@NotNull ApplicationContext context) {
-        super(context, baseUrl);
+    public AylaUsersApi(@NotNull ApplicationContext context, @NotNull ConfigProperties configProperties) {
+        super(context, OwletApiConfig.getConfig(configProperties.getOwlet().getRegion()).getUrlUser());
     }
 
     public AylaAuthorizationByEmail signIn(String email, String password, AylaApplication application) {
@@ -55,6 +55,27 @@ public class AylaUsersApi extends RestApi {
         log.debug(signInRequest.toString());
 
         signInResponse = post(signInUri, httpHeaders -> {
+        }, BodyInserters.fromValue(signInRequest), AylaAuthorizationByEmail.class);
+
+        if (signInResponse != null) {
+            log.info("Sign in successful, expiration in {} seconds", signInResponse.getExpiresIn());
+            log.debug(signInResponse.toString());
+        } else {
+            log.info("Sign in unsuccessful");
+        }
+
+        return signInResponse;
+    }
+
+    public AylaAuthorizationByEmail signIn(String token, AylaApplication application) {
+        AylaTokenLoginInput signInRequest = new AylaTokenLoginInput(application.getAppId(),
+                                                                    application.getAppSecret(), provider, token);
+        AylaAuthorizationByEmail signInResponse;
+
+        log.info("Signing in user with token");
+        log.debug(signInRequest.toString());
+
+        signInResponse = post(tokenSignInUri, httpHeaders -> {
         }, BodyInserters.fromValue(signInRequest), AylaAuthorizationByEmail.class);
 
         if (signInResponse != null) {

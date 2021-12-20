@@ -24,6 +24,7 @@ import java.util.Arrays;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AylaAuthorizationByEmail {
 
+    private String code;
     @JsonProperty(value = "access_token")
     private String accessToken;
     @JsonProperty(value = "refresh_token")
@@ -35,6 +36,14 @@ public class AylaAuthorizationByEmail {
     private AylaRoleTag[] roleTags;
 
     public AylaAuthorizationByEmail() {
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getAccessToken() {
@@ -80,7 +89,8 @@ public class AylaAuthorizationByEmail {
     @Override
     public String toString() {
         return "AylaAuthorizationByEmail{" +
-               "accessToken='" + accessToken + '\'' +
+               "code='" + code + '\'' +
+               ", accessToken='" + accessToken + '\'' +
                ", refreshToken='" + refreshToken + '\'' +
                ", expiresIn=" + expiresIn +
                ", role='" + role + '\'' +

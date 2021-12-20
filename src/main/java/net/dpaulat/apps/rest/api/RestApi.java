@@ -43,7 +43,12 @@ public class RestApi {
 
     protected RestApi(ApplicationContext context, String baseUrl) {
         this.context = context;
-        this.webClient = WebClient.create(baseUrl);
+
+        if (baseUrl != null) {
+            this.webClient = WebClient.create(baseUrl);
+        } else {
+            this.webClient = WebClient.create();
+        }
     }
 
     protected <T> Iterable<T> getIterable(String uri, Consumer<HttpHeaders> headersConsumer, Class<T> responseType) {
@@ -65,6 +70,46 @@ public class RestApi {
             response = webResponse.toIterable();
         } catch (WebClientResponseException ex) {
             handleWebClientResponseException(ex);
+        }
+
+        return response;
+    }
+
+    protected <T> T get(String uri,
+                        Consumer<HttpHeaders> headersConsumer,
+                        Class<T> responseType) {
+        return get(uri,
+                headersConsumer,
+                clientResponse -> Mono.error(new WebClientResponseException(
+                        clientResponse.rawStatusCode(),
+                        clientResponse.statusCode().getReasonPhrase(),
+                        clientResponse.headers().asHttpHeaders(),
+                        null, null)),
+                this::handleWebClientResponseException,
+                responseType);
+    }
+
+    protected <T> T get(String uri,
+                        Consumer<HttpHeaders> headersConsumer,
+                        Function<ClientResponse, Mono<? extends Throwable>> errorFunction,
+                        Consumer<WebClientResponseException> errorExceptionHandler,
+                        Class<T> responseType) {
+
+        Mono<T> webResponse = webClient
+                .get()
+                .uri(uri)
+                .headers(headersConsumer)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .onStatus(HttpStatus::isError, errorFunction)
+                .bodyToMono(responseType);
+
+        T response = null;
+
+        try {
+            response = webResponse.block();
+        } catch (WebClientResponseException ex) {
+            errorExceptionHandler.accept(ex);
         }
 
         return response;
