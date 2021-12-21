@@ -38,6 +38,7 @@ version '0.1.1'
 bootJar {
     archiveBaseName = 'owlet-notifier'
     archiveVersion = '0.1.1'
+    launchScript()
 }
 
 sourceCompatibility = 1.8

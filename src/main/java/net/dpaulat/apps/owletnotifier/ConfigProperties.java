@@ -21,6 +21,7 @@ import net.dpaulat.apps.owletnotifier.monitor.Monitor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.validation.annotation.Validated;
 
@@ -31,7 +32,10 @@ import java.util.Map;
 
 @Configuration
 @EnableAsync
-@PropertySource("owlet-notifier.config")
+@PropertySources({
+        @PropertySource("owlet-notifier.config"),
+        @PropertySource(value = "file:config/owlet-notifier.config", ignoreResourceNotFound = true)
+})
 @ConfigurationProperties()
 @Validated
 public class ConfigProperties {
