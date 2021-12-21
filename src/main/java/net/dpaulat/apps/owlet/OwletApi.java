@@ -16,6 +16,8 @@
 
 package net.dpaulat.apps.owlet;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.dpaulat.apps.ayla.api.AylaDeviceApi;
 import net.dpaulat.apps.ayla.api.AylaUsersApi;
 import net.dpaulat.apps.ayla.json.AylaApplication;
@@ -28,6 +30,7 @@ import net.dpaulat.apps.owlet.api.OwletSsoApi;
 import net.dpaulat.apps.owlet.json.OwletApplication;
 import net.dpaulat.apps.owlet.json.OwletApplicationV2;
 import net.dpaulat.apps.owlet.json.OwletApplicationV2Europe;
+import net.dpaulat.apps.owlet.json.RealTimeVitals;
 import net.dpaulat.apps.owletnotifier.ConfigProperties;
 import net.dpaulat.apps.util.NumberUtils;
 import org.slf4j.Logger;
@@ -59,6 +62,8 @@ public class OwletApi {
     private AylaAuthorizationByEmail authorization;
     private List<AylaDevice> deviceList;
 
+    private ObjectMapper objectMapper;
+
     public OwletApi(@NotNull AylaDeviceApi aylaDeviceApi,
                     @NotNull AylaUsersApi aylaUsersApi,
                     @NotNull FirebaseAuthenticationApi firebaseAuthenticationApi,
@@ -74,6 +79,7 @@ public class OwletApi {
         this.monitoringEnabled = new HashMap<>();
         this.authorization = null;
         this.deviceList = null;
+        this.objectMapper = new ObjectMapper();
     }
 
     @SuppressWarnings("unchecked")
@@ -164,7 +170,40 @@ public class OwletApi {
 
             for (AylaDevProperty property : propertyList) {
                 propertyMap.put(property.getName(), property.getValue());
+
+                if (property.getName().equals(OwletProperties.REAL_TIME_VITALS.name())) {
+                    updateRealTimeVitals(propertyMap, property.getValue());
+                }
             }
+        }
+    }
+
+    private void updateRealTimeVitals(Map<String, String> propertyMap, String value) {
+        RealTimeVitals vitals = null;
+
+        try {
+            vitals = objectMapper.readValue(value, RealTimeVitals.class);
+        } catch (JsonProcessingException e) {
+            log.warn("Failed to update vitals: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        if (vitals != null) {
+            propertyMap.put(OwletProperties.OXYGEN_LEVEL.name(), String.valueOf(vitals.getOx()));
+            propertyMap.put(OwletProperties.HEART_RATE.name(), String.valueOf(vitals.getHr()));
+            propertyMap.put(OwletProperties.MOVEMENT.name(), String.valueOf(vitals.getMv() > 0));
+            propertyMap.put(OwletProperties.SOCK_CONNECTION.name(), String.valueOf(vitals.getSc() > 0));
+            // Skip "st"
+            propertyMap.put(OwletProperties.BASE_STATION_ON.name(), String.valueOf(vitals.getBso() > 0));
+            propertyMap.put(OwletProperties.BATT_LEVEL.name(), String.valueOf(vitals.getBat()));
+            // Skip "btt"
+            propertyMap.put(OwletProperties.CHARGE_STATUS.name(), String.valueOf(vitals.getChg()));
+            // Skip "aps" (Alert Paused)
+            // Skip "alrt" (Alert)
+            // Skip "ota"
+            propertyMap.put(OwletProperties.SOCK_REC_PLACED.name(), String.valueOf(vitals.getSrf() > 0));
+            propertyMap.put(OwletProperties.BLE_RSSI.name(), String.valueOf(vitals.getRsi()));
+            // Skip "sb"
         }
     }
 
