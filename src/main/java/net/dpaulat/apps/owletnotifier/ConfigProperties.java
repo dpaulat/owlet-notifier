@@ -34,7 +34,8 @@ import java.util.Map;
 @EnableAsync
 @PropertySources({
         @PropertySource(value = "owlet-notifier.config", ignoreResourceNotFound = true),
-        @PropertySource(value = "file:config/owlet-notifier.config", ignoreResourceNotFound = true)
+        @PropertySource(value = "file:config/owlet-notifier.config", ignoreResourceNotFound = true),
+        @PropertySource(value = "file:${OWLET_CONFIG}/config/owlet-notifier.config", ignoreResourceNotFound = true)
 })
 @ConfigurationProperties()
 @Validated
