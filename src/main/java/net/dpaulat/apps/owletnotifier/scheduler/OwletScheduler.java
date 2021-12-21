@@ -88,6 +88,7 @@ public class OwletScheduler {
         deviceList = owletApi.retrieveDevices();
 
         for (AylaDevice device : deviceList) {
+            log.info("Found Owlet device: " + device.getDsn());
             owletApi.setAppActive(device);
             owletApi.updateProperties(device);
         }
