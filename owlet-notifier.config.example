@@ -1,0 +1,47 @@
+# Oxygen Monitor
+owlet.monitors[0].property=OXYGEN_LEVEL
+owlet.monitors[0].type=MinimumValue
+owlet.monitors[0].value=90
+owlet.monitors[0].repeatTime=60
+owlet.monitors[0].sockReady=true
+owlet.monitors[0].activeMessage=%1$s's %2$s is %3$s
+owlet.monitors[0].deactivateMessage=%1$s's %2$s is %3$s
+
+# Heart Rate Low Monitor
+owlet.monitors[1].property=HEART_RATE
+owlet.monitors[1].type=MinimumValue
+owlet.monitors[1].value=80
+owlet.monitors[1].repeatTime=60
+owlet.monitors[1].sockReady=true
+owlet.monitors[1].activeMessage=%1$s's %2$s is %3$s
+owlet.monitors[1].deactivateMessage=%1$s's %2$s is %3$s
+
+# Heart Rate High Monitor
+owlet.monitors[2].property=HEART_RATE
+owlet.monitors[2].type=MaximumValue
+owlet.monitors[2].value=220
+owlet.monitors[2].repeatTime=60
+owlet.monitors[2].sockReady=true
+owlet.monitors[2].activeMessage=%1$s's %2$s is %3$s
+owlet.monitors[2].deactivateMessage=%1$s's %2$s is %3$s
+
+# Owlet Config
+# Login is required
+#owlet.email=your-email
+#owlet.password=your-password
+# Region defaults to World
+#owlet.region=World
+#owlet.region=Europe
+#owlet.region=Legacy
+
+owlet.babyName=Dave
+owlet.device.enabled.AC000W012345678=false
+owlet.device.babyName.AC000W012345678=Steve
+
+# Alexa Config
+# See README for 
+#alexa.clientId=your-alexa-clientId
+#alexa.clientSecret=your-alexa-clientSecret
+#alexa.skillId=your-alexa-skillId
+alexa.cardTitle=Owlet Notifier
+alexa.placeholderReminder=This is an Owlet Notifier placeholder reminder.

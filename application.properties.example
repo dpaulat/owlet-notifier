@@ -1,0 +1,10 @@
+#server.ssl.key-store-type=PKCS12
+#server.ssl.key-store=classpath:owlet-notifier.p12
+#server.ssl.key-store-password=my-keystore-password
+#server.ssl.key-alias=owlet-notifier
+server.ssl.enabled=false
+server.address=0.0.0.0
+server.port=8088
+
+spring.datasource.url=jdbc:h2:file:./owlet-notifier.db;DB_CLOSE_ON_EXIT=FALSE
+spring.jpa.hibernate.ddl-auto=update
