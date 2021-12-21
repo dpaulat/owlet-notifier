@@ -27,6 +27,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Configuration
 @EnableAsync
@@ -64,6 +65,8 @@ public class ConfigProperties {
         @NotBlank
         private String password;
         private OwletRegion region = OwletRegion.World;
+        private String babyName;
+        private OwletDevice device = new OwletDevice();
 
         public List<Monitor> getMonitors() {
             return monitors;
@@ -93,6 +96,26 @@ public class ConfigProperties {
             this.region = region;
         }
 
+        public String getBabyName() {
+            return babyName;
+        }
+
+        public String getBabyName(String dsn) {
+            return device.getBabyName().getOrDefault(dsn, babyName);
+        }
+
+        public void setBabyName(String babyName) {
+            this.babyName = babyName;
+        }
+
+        public OwletDevice getDevice() {
+            return device;
+        }
+
+        public void setDevice(OwletDevice device) {
+            this.device = device;
+        }
+
         @Override
         public String toString() {
             return "Owlet{" +
@@ -100,6 +123,37 @@ public class ConfigProperties {
                    ", email='" + email + '\'' +
                    ", password='***'" +
                    ", region=" + region +
+                   ", babyName=" + babyName +
+                   ", device=" + device +
+                   '}';
+        }
+    }
+
+    public static class OwletDevice {
+        private Map<String, Boolean> enabled;
+        private Map<String, String> babyName;
+
+        public Map<String, Boolean> getEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(Map<String, Boolean> enabled) {
+            this.enabled = enabled;
+        }
+
+        public Map<String, String> getBabyName() {
+            return babyName;
+        }
+
+        public void setBabyName(Map<String, String> babyName) {
+            this.babyName = babyName;
+        }
+
+        @Override
+        public String toString() {
+            return "OwletDevice{" +
+                   "enabled=" + enabled +
+                   ", babyName=" + babyName +
                    '}';
         }
     }

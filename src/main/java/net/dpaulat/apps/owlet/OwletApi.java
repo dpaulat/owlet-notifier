@@ -54,6 +54,7 @@ public class OwletApi {
     private final AylaUsersApi aylaUsersApi;
     private final FirebaseAuthenticationApi firebaseAuthenticationApi;
     private final OwletSsoApi owletSsoApi;
+    private final ConfigProperties configProperties;
 
     private final OwletRegion owletRegion;
     private final OwletApiConfig owletApiConfig;
@@ -73,6 +74,7 @@ public class OwletApi {
         this.aylaUsersApi = aylaUsersApi;
         this.firebaseAuthenticationApi = firebaseAuthenticationApi;
         this.owletSsoApi = owletSsoApi;
+        this.configProperties = configProperties;
         this.owletRegion = configProperties.getOwlet().getRegion();
         this.owletApiConfig = OwletApiConfig.getConfig(owletRegion);
         this.deviceMap = new HashMap<>();
@@ -175,6 +177,11 @@ public class OwletApi {
                     updateRealTimeVitals(propertyMap, property.getValue());
                 }
             }
+
+            String babyName = configProperties.getOwlet().getBabyName(device.getDsn());
+            if (babyName != null) {
+                propertyMap.put(OwletProperties.BABY_NAME.name(), babyName);
+            }
         }
     }
 
@@ -258,7 +265,9 @@ public class OwletApi {
     public void setAllMonitoringEnabled(boolean enabled) {
         if (deviceList != null) {
             for (AylaDevice device : deviceList) {
-                setMonitoringEnabled(device, enabled);
+                if (configProperties.getOwlet().getDevice().getEnabled().getOrDefault(device.getDsn(), true)) {
+                    setMonitoringEnabled(device, enabled);
+                }
             }
         }
     }
